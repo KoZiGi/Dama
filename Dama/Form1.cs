@@ -15,7 +15,6 @@ namespace Dama
         public Form1()
         {
             InitializeComponent();
-
             drawboard();
 
         }
@@ -32,26 +31,45 @@ namespace Dama
             {
                 for (int j = 0; j < 4; j++)
                 {
-                    PictureBox pbx = new PictureBox();
-                    pbx.Name = $"_{i}_{j}";
-                    pbx.Width = 80;
-                    pbx.Height = 80;
-                    if (indent)
+                    PictureBox pbx = genpbx(i,j,indent);
+                    switch (i)
                     {
-                        pbx.Left = 80 + j * 160;
-                        pbx.Top=80*i;
+                        case int g when (i<3):
+                            pbx.Image = Properties.Resources.Fekete;
+                            break;
+
+                        case int g when (i >4):
+                            pbx.Image = Properties.Resources.Feher;
+                            break;
+
+                        default:
+                            pbx.Image = Properties.Resources.semmi;
+                            break;
+
                     }
-                    else
-                    {
-                        pbx.Left =  j * 160;
-                        pbx.Top = 80 * i;
-                    }
-                    pbx.Image = Properties.Resources.FeherDama;
-                    pbx.SizeMode = PictureBoxSizeMode.Zoom;
                     Controls.Add(pbx);
                 }
                 indent = !indent;
             }
+        }
+        private PictureBox genpbx(int i, int j,bool indent)
+        {
+            PictureBox pbx = new PictureBox();
+            pbx.Width = 80;
+            pbx.Height = 80;
+            pbx.Name = $"_{i}_{j}";
+            if (indent)
+            {
+                pbx.Left = 80 + j * 160;
+                pbx.Top = 80 * i;
+            }
+            else
+            {
+                pbx.Left = j * 160;
+                pbx.Top = 80 * i;
+            }
+            pbx.SizeMode = PictureBoxSizeMode.Zoom;
+            return pbx;
         }
     }
 }
