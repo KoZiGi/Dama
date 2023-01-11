@@ -48,6 +48,10 @@ namespace Dama
 
                     }
                     Controls.Add(pbx);
+
+                   
+
+
                 }
                 indent = !indent;
             }
@@ -57,14 +61,15 @@ namespace Dama
             PictureBox pbx = new PictureBox();
             pbx.Width = 80;
             pbx.Height = 80;
-            pbx.Name = $"_{i}_{j}";
             if (indent)
             {
+                pbx.Name = $"_{i}_{1+2*j}";
                 pbx.Left = 80 + j * 160;
                 pbx.Top = 80 * i;
             }
             else
             {
+                pbx.Name = $"_{i}_{2*j}";
                 pbx.Left = j * 160;
                 pbx.Top = 80 * i;
             }
