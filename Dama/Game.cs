@@ -38,10 +38,12 @@ namespace Dama
         {
 
         }
+
         public static void Move()
         {
 
         }
+
         public static void Switch() => Data.isBlack = !Data.isBlack;
     }
 }
