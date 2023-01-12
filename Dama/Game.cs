@@ -9,8 +9,16 @@ namespace Dama
 {
     class Game
     {
-        public void GameLogic(bool moves)
+        public static void GameLogic(PictureBox pbox)
         {
+            int x = Convert.ToInt32(pbox.Name.Split('_')[1][0].ToString()), y = Convert.ToInt32(pbox.Name.Split('_')[1][1].ToString());
+            if (Data.selected==null)
+            {
+                if (!Data.Field[y, x].isVoid)
+                    Data.selected = Data.Field[y, x];
+                else 
+                   MessageBox.Show(x.ToString()+y.ToString());
+            }
         }
         public static void GenGame()
         {

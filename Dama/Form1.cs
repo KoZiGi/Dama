@@ -45,8 +45,11 @@ namespace Dama
                         default:
                             pbx.Image = Properties.Resources.semmi;
                             break;
-
                     }
+                    pbx.Click += delegate 
+                    {
+                        Game.GameLogic(pbx);  
+                    };
                     Controls.Add(pbx);
 
                    
