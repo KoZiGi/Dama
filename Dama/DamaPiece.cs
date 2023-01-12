@@ -8,7 +8,7 @@ namespace Dama
 {
     class DamaPiece
     {
-        public bool isDama;
+        public bool isDama, isBlack, isVoid;
         public int X;
         public int Y;
         public DamaPiece(int x, int y)
@@ -16,6 +16,8 @@ namespace Dama
             X = x;
             Y = y;
             isDama = false;
+            isBlack = y<3;
+            isVoid = y==4 || y==5 ;
         }
     }
 }

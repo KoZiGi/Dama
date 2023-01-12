@@ -12,6 +12,16 @@ namespace Dama
         public void GameLogic(bool moves)
         {
         }
+        public static void GenGame()
+        {
+            bool indent = false;
+            for (int i = 0; i < 8; i++)
+            {
+                for (int f = 0; f < 8; f++)
+                    Data.Field[i, f] = indent ? (i%2!=0 ? new DamaPiece(f, i) : null) : (i%2==0 ? new DamaPiece(f,i) : null);
+                indent = !indent;
+            }
+        }
         public static void SelectPiece(PictureBox clickedpbx)
         {
             Data.selected = Data.Field[Convert.ToInt32(clickedpbx.Name.Split('_')[0]), Convert.ToInt32(clickedpbx.Name.Split('_')[1])];

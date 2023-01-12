@@ -16,7 +16,7 @@ namespace Dama
         {
             InitializeComponent();
             drawboard();
-
+            Game.GenGame();
         }
 
 
