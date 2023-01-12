@@ -42,6 +42,11 @@ namespace Dama
         {
 
         }
+        public static void PesantToDama(DamaPiece babu)
+        {
+            if (babu.isBlack&&babu.Y==7) babu.isDama = true;
+            else if (!babu.isBlack&&babu.Y==0) babu.isDama = true;
+        }
         public static void Switch() => Data.isBlack = !Data.isBlack;
     }
 }
