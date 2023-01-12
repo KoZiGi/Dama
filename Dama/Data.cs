@@ -8,6 +8,7 @@ namespace Dama
 {
     class Data
     {
+        public static bool isBlack = true;
         public static DamaPiece[,] Field = new DamaPiece[8, 8];
         public static DamaPiece selected;
     }
