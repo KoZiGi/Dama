@@ -107,5 +107,26 @@
   <ItemGroup>
     <None Include="Resources\semmi.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FeherDamaHighlight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FeherHighlight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FeketeDamaHighlight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FeketeHighlight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FieldFeher.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FieldFekete.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FieldPiros.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

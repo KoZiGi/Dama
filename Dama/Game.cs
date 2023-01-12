@@ -18,7 +18,7 @@ namespace Dama
         }
         public static void SelectPiece()
         {
-
+           
         }
         public static  void MovePiece()
         {

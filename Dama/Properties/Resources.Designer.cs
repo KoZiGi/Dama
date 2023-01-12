@@ -83,6 +83,26 @@ namespace Dama.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap FeherDamaHighlight {
+            get {
+                object obj = ResourceManager.GetObject("FeherDamaHighlight", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap FeherHighlight {
+            get {
+                object obj = ResourceManager.GetObject("FeherHighlight", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Fekete {
             get {
                 object obj = ResourceManager.GetObject("Fekete", resourceCulture);
@@ -96,6 +116,56 @@ namespace Dama.Properties {
         internal static System.Drawing.Bitmap FeketeDama {
             get {
                 object obj = ResourceManager.GetObject("FeketeDama", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap FeketeDamaHighlight {
+            get {
+                object obj = ResourceManager.GetObject("FeketeDamaHighlight", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap FeketeHighlight {
+            get {
+                object obj = ResourceManager.GetObject("FeketeHighlight", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap FieldFeher {
+            get {
+                object obj = ResourceManager.GetObject("FieldFeher", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap FieldFekete {
+            get {
+                object obj = ResourceManager.GetObject("FieldFekete", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap FieldPiros {
+            get {
+                object obj = ResourceManager.GetObject("FieldPiros", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
