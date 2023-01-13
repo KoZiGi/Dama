@@ -47,6 +47,7 @@ namespace Dama
                             break;
 
                     }
+                    pbx.Click += delegate (object sender, EventArgs e) { GameEvents.Position(pbx, this.Controls); };
                     Controls.Add(pbx);
 
                    

@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="DamaPiece.cs" />
     <Compile Include="Data.cs" />
+    <Compile Include="GameEvents.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
