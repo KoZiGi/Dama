@@ -12,37 +12,43 @@ namespace Dama
         public static void GameLogic(PictureBox pbox)
         {
             int x = Convert.ToInt32(pbox.Name.Split('_')[1][0].ToString()), y = Convert.ToInt32(pbox.Name.Split('_')[1][1].ToString());
-            if (Data.selected==null)
+            MessageBox.Show(Data._Field[x, y].ToString());
+            if (Data.selectedIdx[0]==-1 && Data.selectedIdx[1] == -1)
             {
-                if (!Data.Field[y, x].isVoid)
-                    Data.selected = Data.Field[y, x];
-                else 
-                   MessageBox.Show(x.ToString()+y.ToString());
+                SelectPiece(pbox.Name);
             }
+        }
+        public static void Hit()
+        {
+
         }
         public static void GenGame()
         {
             bool indent = false;
             for (int i = 0; i < 8; i++)
             {
-                for (int f = 0; f < 8; f++)
-                    Data.Field[i, f] = indent ? (i%2!=0 ? new DamaPiece(f, i) : null) : (i%2==0 ? new DamaPiece(f,i) : null);
+                for (int g = 0; g < 8; g++)
+                {
+                    Data._Field[i, g] = DeterminePiece(i, g, indent);
+                }
                 indent = !indent;
             }
         }
-        public static void SelectPiece(PictureBox clickedpbx)
+        public static void SelectPiece(string pbxName)
         {
-            Data.selected = Data.Field[Convert.ToInt32(clickedpbx.Name.Split('_')[0]), Convert.ToInt32(clickedpbx.Name.Split('_')[1])];
+            Data.selectedIdx[0] = Convert.ToInt32(pbxName.Split('_')[1][0].ToString());
+            Data.selectedIdx[1] = Convert.ToInt32(pbxName.Split('_')[1][1].ToString());
         }
-        public static void CheckFTH()
+        public static bool CheckFTH()
         {
 
+            return false;
         }
         public static void InitMove()
         {
             
         }
-        public static void CheckValid()
+        public static void CheckValid(bool canhit)
         {
 
         }
@@ -52,9 +58,15 @@ namespace Dama
         }
         public static void PesantToDama(DamaPiece babu)
         {
-            if (babu.isBlack&&babu.Y==7) babu.isDama = true;
-            else if (!babu.isBlack&&babu.Y==0) babu.isDama = true;
+
         }
         public static void Switch() => Data.isBlack = !Data.isBlack;
+        private static int DeterminePiece(int x, int y, bool indent) => 
+            (y == 4 || y == 3) ? 0 :
+                y < 3 ?
+                    indent ? x % 2 == 0 ? 0 : 1 : x % 2 == 0 ? 1 : 0 :
+                y > 4 ?
+                    indent ? x % 2 == 0 ? 0 : 2 : x % 2 == 0 ? 2 : 0 :
+            0;
     }
 }

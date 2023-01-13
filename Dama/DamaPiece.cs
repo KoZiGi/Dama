@@ -17,7 +17,11 @@ namespace Dama
             Y = y;
             isDama = false;
             isBlack = y<3;
-            isVoid = y==4 || y==5 ;
+            isVoid = y==3 || y==4 ;
+        }
+        public override string ToString()
+        {
+            return $"{X}-{Y} {(isDama ? "Dáma" : "")}{(isVoid ? "" : (isBlack?" Fekete":" Fehér"))}";
         }
     }
 }
