@@ -39,9 +39,20 @@ namespace Dama
             Data.selectedIdx[0] = Convert.ToInt32(pbxName.Split('_')[1][0].ToString());
             Data.selectedIdx[1] = Convert.ToInt32(pbxName.Split('_')[1][1].ToString());
         }
-        public static bool CheckFTH()
+        public static bool CheckBlackFTH()
         {
-
+            for (int i = 0; i < 8; i++)
+            {
+                for (int g = 0; g < 8; g++)
+                {
+                    //if (Data._Field[i,g]==1)
+                }
+            }
+            return false;
+        }
+        public static bool CheckWhiteFTH()
+        {
+            
             return false;
         }
         public static void InitMove()
