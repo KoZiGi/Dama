@@ -24,7 +24,5 @@ namespace Dama
         {
             return $"{X}-{Y} {(isDama ? "Dáma" : "")}{(isVoid ? "" : (isBlack?" Fekete":" Fehér"))}";
         }
-
-        public void Select() => this.Selected=!this.Selected;
     }
 }

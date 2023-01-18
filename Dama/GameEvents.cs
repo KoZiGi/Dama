@@ -17,16 +17,15 @@ namespace Dama
         {
             Control selectedpiece = sender as Control;
             List<int> coordinatelist = new List<int>();      //coordinatedeclare(selectedpiece.Name);
-            coordinatelist.Add(selectedpiece.Name[1]);
-            coordinatelist.Add(selectedpiece.Name[2]);
-            Data.Field[coordinatelist[0], coordinatelist[1]].Selected = true;
+            coordinatelist.Add(Convert.ToInt32(selectedpiece.Name[1]));
+            coordinatelist.Add(Convert.ToInt32(selectedpiece.Name[2]));
             validMovement(formcontrols, coordinatelist);
         }
 
         private static void validMovement(Control.ControlCollection formcontrols, List<int> coordinatelist)
         {
-            string validmovesName1 = $"_{coordinatelist[1]-1}{coordinatelist[0]-1}";
-            string validmovesName2 = $"_{coordinatelist[1]+1}{coordinatelist[0]-1}";
+            string validmovesName1 = $"_{coordinatelist[0]-1}{coordinatelist[1]+1}";
+            string validmovesName2 = $"_{coordinatelist[0]-1}{coordinatelist[1]-1}";
             PictureBox move1 = formcontrols.Find(validmovesName1, true)[0] as PictureBox;
             PictureBox move2 = formcontrols.Find(validmovesName2, true)[0] as PictureBox;
             move1.Image = Properties.Resources.FieldPiros;
