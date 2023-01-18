@@ -21,18 +21,13 @@ namespace Dama
             Control selectedpiece = sender as Control;
             List<int> coordinatelist = positionOnGameField(selectedpiece);
             if (!pieceSelected) selectedPieceDisplayAndMovement(coordinatelist, formcontrols);
-            else if (repeatClickCheck(coordinatelist) && pieceSelected)
+            else if (repeatClickCheck(coordinatelist))
             {
                 if (Data._Field[recentSelectedCoordinates[0], recentSelectedCoordinates[1]] == 1)
                 {
                     string name1 = $"_{recentSelectedCoordinates[0] - 1}{recentSelectedCoordinates[1] + 1}";
                     string name2 = $"_{recentSelectedCoordinates[0] + 1}{recentSelectedCoordinates[1] + 1}";
                     fieldSetBackToWhite(name1, name2, formcontrols);
-                    string name = "";
-                    for (int i = -1; i < 2; i++)
-                    {
-                        name = $"_{recentSelectedCoordinates[0] - 1}{recentSelectedCoordinates[1] + 1}";
-                    }
                 }
                 else if (Data._Field[recentSelectedCoordinates[0], recentSelectedCoordinates[1]] == 2)
                 {
