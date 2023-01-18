@@ -29,7 +29,6 @@ namespace Dama
             }
             else if (repeatClickCheck(coordinatelist) && pieceSelected)
             {
-                //red squares go back to white
                 if (Data._Field[recentSelectedCoordinates[0], recentSelectedCoordinates[1]] == 1)
                 {
                     string name1 = $"_{recentSelectedCoordinates[0] - 1}{recentSelectedCoordinates[1] + 1}";
@@ -42,14 +41,16 @@ namespace Dama
                 }
                 else if (Data._Field[recentSelectedCoordinates[0], recentSelectedCoordinates[1]] == 2)
                 {
-                    string nam2 = $"_{recentSelectedCoordinates[0]}{recentSelectedCoordinates[1] - 1}";
-
+                    string name1 = $"_{recentSelectedCoordinates[0] - 1}{recentSelectedCoordinates[1] -1}";
+                    string name2 = $"_{recentSelectedCoordinates[0] + 1}{recentSelectedCoordinates[1] - 1}";
+                    PictureBox goWhite = formcontrols.Find(name1, true)[0] as PictureBox;
+                    goWhite.Image = Properties.Resources.FieldFeher;
+                    goWhite = formcontrols.Find(name2, true)[0] as PictureBox;
+                    goWhite.Image = Properties.Resources.FieldFeher;
+                    pieceSelected = false;
                 }
-
-                //PictureBox goWhite = formcontrols.Find(name, true)[0] as PictureBox;
-
             }
-            else if ((selectedpiece as PictureBox).Image==Properties.Resources.FieldPiros) 
+            else if (pieceSelected) 
             {
                 if(Data._Field[recentSelectedCoordinates[0], recentSelectedCoordinates[1]] == 2)
                 {
@@ -58,7 +59,8 @@ namespace Dama
                     Data._Field[recentSelectedCoordinates[0], recentSelectedCoordinates[1]] = 0;
                     string name = $"_{recentSelectedCoordinates[0]}{recentSelectedCoordinates[1]}";
                     PictureBox goWhite = formcontrols.Find(name, true)[0] as PictureBox;
-                    goWhite.Image = Properties.Resources.Feher;
+                    goWhite.Image = Properties.Resources.FieldFeher;
+                    (selectedpiece as PictureBox).Tag = "0";
                 }
                 if (Data._Field[recentSelectedCoordinates[0], recentSelectedCoordinates[1]] == 1)
                 {
@@ -67,8 +69,11 @@ namespace Dama
                     Data._Field[recentSelectedCoordinates[0], recentSelectedCoordinates[1]] = 0;
                     string name = $"_{recentSelectedCoordinates[0]}{recentSelectedCoordinates[1]}";
                     PictureBox goWhite = formcontrols.Find(name, true)[0] as PictureBox;
-                    goWhite.Image = Properties.Resources.Feher;
+                    goWhite.Image = Properties.Resources.FieldFeher;
+                    (selectedpiece as PictureBox).Tag = "0";
                 }
+                pieceSelected = false;
+                ClearField(formcontrols);
             }
         }
 
@@ -107,6 +112,7 @@ namespace Dama
             {
                 PictureBox move = formcontrols.Find(selectedName, true)[0] as PictureBox;
                 move.Image = Properties.Resources.FieldPiros;
+                move.Tag = "3";
             }
             catch (IndexOutOfRangeException){}
         }
@@ -117,6 +123,12 @@ namespace Dama
             string validmovesName2 = $"_{coordinatelist[0]-1}{coordinatelist[1]-1}";
             selectionDisplay(formcontrols, validmovesName1);
             selectionDisplay(formcontrols, validmovesName2);
+        }
+
+        private static void ClearField(Control.ControlCollection formControll)
+        {
+            for (int i = 0; i < formControll.Count; i++) if ((formControll[i] as PictureBox).Tag == "3")
+                                                            (formControll[i] as PictureBox).Image = Properties.Resources.FieldFeher;
         }
     }
 }
