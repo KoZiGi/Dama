@@ -21,5 +21,7 @@ namespace Dama
             isVoid = y==4 || y==5 ;
             this.Selected = false;
         }
+
+        public void Select() => this.Selected=!this.Selected;
     }
 }

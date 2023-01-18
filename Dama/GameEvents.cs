@@ -16,8 +16,10 @@ namespace Dama
         public static void Position(object sender, Control.ControlCollection formcontrols)
         {
             Control selectedpiece = sender as Control;
-            List<int> coordinatelist = coordinatedeclare(selectedpiece.Name);
-            Data.Field[coordinatelist[1], coordinatelist[0]].Selected = true;
+            List<int> coordinatelist = new List<int>();      //coordinatedeclare(selectedpiece.Name);
+            coordinatelist.Add(selectedpiece.Name[1]);
+            coordinatelist.Add(selectedpiece.Name[2]);
+            Data.Field[coordinatelist[0], coordinatelist[1]].Selected = true;
             validMovement(formcontrols, coordinatelist);
         }
 
