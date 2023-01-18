@@ -16,27 +16,37 @@ namespace Dama
         public static void Position(object sender, Control.ControlCollection formcontrols)
         {
             Control selectedpiece = sender as Control;
-            List<int> coordinatelist = new List<int>();      //coordinatedeclare(selectedpiece.Name);
-            coordinatelist.Add(Convert.ToInt32(selectedpiece.Name[1]));
-            coordinatelist.Add(Convert.ToInt32(selectedpiece.Name[2]));
-            validMovement(formcontrols, coordinatelist);
+            List<int> coordinatelist = new List<int>();      
+            coordinatelist.Add(Convert.ToInt32(selectedpiece.Name[1].ToString()));
+            coordinatelist.Add(Convert.ToInt32(selectedpiece.Name[2].ToString()));
+            if(Data._Field[coordinatelist[0],coordinatelist[1]] == 2) validMovementWhite(formcontrols, coordinatelist); //white dama piece selected
+            if (Data._Field[coordinatelist[0], coordinatelist[1]] == 1) validMovementBlack(formcontrols, coordinatelist);   //black dama piece selected
         }
 
-        private static void validMovement(Control.ControlCollection formcontrols, List<int> coordinatelist)
+        private static void validMovementBlack(Control.ControlCollection formcontrols, List<int> coordinatelist)
         {
-            string validmovesName1 = $"_{coordinatelist[0]-1}{coordinatelist[1]+1}";
+            string validmovesName1 = $"_{coordinatelist[0] + 1}{coordinatelist[1] + 1}";
+            string validmovesName2 = $"_{coordinatelist[0] - 1}{coordinatelist[1] + 1}";
+            selectionDisplay(formcontrols, validmovesName1);
+            selectionDisplay(formcontrols, validmovesName2);
+        }
+
+        private static void selectionDisplay(Control.ControlCollection formcontrols, string selectedName)    
+        {
+            try
+            {
+                PictureBox move = formcontrols.Find(selectedName, true)[0] as PictureBox;
+                move.Image = Properties.Resources.FieldPiros;
+            }
+            catch (IndexOutOfRangeException){}
+        }
+
+        private static void validMovementWhite(Control.ControlCollection formcontrols, List<int> coordinatelist)
+        {
+            string validmovesName1 = $"_{coordinatelist[0]+1}{coordinatelist[1]-1}";
             string validmovesName2 = $"_{coordinatelist[0]-1}{coordinatelist[1]-1}";
-            PictureBox move1 = formcontrols.Find(validmovesName1, true)[0] as PictureBox;
-            PictureBox move2 = formcontrols.Find(validmovesName2, true)[0] as PictureBox;
-            move1.Image = Properties.Resources.FieldPiros;
-            move2.Image = Properties.Resources.FieldPiros;
-        }
-
-        private static List<int> coordinatedeclare(string name)
-        {
-            List<int> coordinates = new List<int>();
-            for (int i = 1; i < name.Length; i++) coordinates.Add(Convert.ToInt32(name[i]));
-            return coordinates;
+            selectionDisplay(formcontrols, validmovesName1);
+            selectionDisplay(formcontrols, validmovesName2);
         }
     }
 }
