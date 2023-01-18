@@ -11,7 +11,6 @@ namespace Dama
         public bool isDama, isBlack, isVoid;
         public int X;
         public int Y;
-        public bool Selected;
         public DamaPiece(int x, int y)
         {
             X = x;

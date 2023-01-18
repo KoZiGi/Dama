@@ -23,52 +23,57 @@ namespace Dama
             if (!pieceSelected) selectedPieceDisplayAndMovement(coordinatelist, formcontrols);
             else if (repeatClickCheck(coordinatelist))
             {
-                if (Data._Field[recentSelectedCoordinates[0], recentSelectedCoordinates[1]] == 1)
-                {
-                    string name1 = $"_{recentSelectedCoordinates[0] - 1}{recentSelectedCoordinates[1] + 1}";
-                    string name2 = $"_{recentSelectedCoordinates[0] + 1}{recentSelectedCoordinates[1] + 1}";
-                    fieldSetBackToWhite(name1, name2, formcontrols);
-                }
-                else if (Data._Field[recentSelectedCoordinates[0], recentSelectedCoordinates[1]] == 2)
-                {
-                    string name1 = $"_{recentSelectedCoordinates[0] - 1}{recentSelectedCoordinates[1] -1}";
-                    string name2 = $"_{recentSelectedCoordinates[0] + 1}{recentSelectedCoordinates[1] - 1}";
-                    fieldSetBackToWhite(name1, name2, formcontrols);
-                }
+                if (getCoordinatesVal(recentSelectedCoordinates, 0, 0) == 1) fieldSetBackToWhite(formcontrols, +1);
+                else if (getCoordinatesVal(recentSelectedCoordinates, 0, 0) == 2) fieldSetBackToWhite(formcontrols, -1);
             }
             else if (pieceSelected) 
             {
-                if(Data._Field[recentSelectedCoordinates[0], recentSelectedCoordinates[1]] == 2)
-                {
-                    (selectedpiece as PictureBox).Image = Properties.Resources.Feher;
-                    Data._Field[coordinatelist[0], coordinatelist[1]] = 2;
-                    Data._Field[recentSelectedCoordinates[0], recentSelectedCoordinates[1]] = 0;
-                    string name = $"_{recentSelectedCoordinates[0]}{recentSelectedCoordinates[1]}";
-                    PictureBox goWhite = formcontrols.Find(name, true)[0] as PictureBox;
-                    goWhite.Image = Properties.Resources.FieldFeher;
-                    (selectedpiece as PictureBox).Tag = "0";
-                }
-                if (Data._Field[recentSelectedCoordinates[0], recentSelectedCoordinates[1]] == 1)
-                {
-                    (selectedpiece as PictureBox).Image = Properties.Resources.Fekete;
-                    Data._Field[coordinatelist[0], coordinatelist[1]] = 1;
-                    Data._Field[recentSelectedCoordinates[0], recentSelectedCoordinates[1]] = 0;
-                    string name = $"_{recentSelectedCoordinates[0]}{recentSelectedCoordinates[1]}";
-                    PictureBox goWhite = formcontrols.Find(name, true)[0] as PictureBox;
-                    goWhite.Image = Properties.Resources.FieldFeher;
-                    (selectedpiece as PictureBox).Tag = "0";
-                }
+                if(getCoordinatesVal(recentSelectedCoordinates, 0, 0) == 2) afterMovementSetting(false, 2, selectedpiece, coordinatelist, formcontrols);
+                if(getCoordinatesVal(recentSelectedCoordinates, 0, 0) == 1) afterMovementSetting(true, 1, selectedpiece, coordinatelist, formcontrols);
                 pieceSelected = false;
                 ClearField(formcontrols);
             }
         }
 
-        private static void fieldSetBackToWhite(string name1, string name2, Control.ControlCollection formcontrols)
+        private static int getCoordinatesVal(List<int> recentSelectedCoordinates, int x, int y)
         {
-            PictureBox goWhite = formcontrols.Find(name1, true)[0] as PictureBox;
-            goWhite.Image = Properties.Resources.FieldFeher;
-            goWhite = formcontrols.Find(name2, true)[0] as PictureBox;
-            goWhite.Image = Properties.Resources.FieldFeher;
+            return Data._Field[recentSelectedCoordinates[0]+(x), recentSelectedCoordinates[1]+(y)];
+        }
+
+        private static void afterMovementSetting(bool isBlack, int val, Control selectedpiece, List<int> coordinatelist, Control.ControlCollection formcontrols)
+        {
+            if (isBlack) setPboxImg(selectedpiece as PictureBox, Properties.Resources.Fekete);
+            else setPboxImg(selectedpiece as PictureBox, Properties.Resources.Feher);
+            giveCoordinatesVal(coordinatelist, val);          
+            giveCoordinatesVal(recentSelectedCoordinates, 0);
+            string name = $"_{recentSelectedCoordinates[0]}{recentSelectedCoordinates[1]}";
+            PictureBox goWhite = findPbox(name, formcontrols);
+            setPboxImg(goWhite, Properties.Resources.FieldFeher);
+            (selectedpiece as PictureBox).Tag = "0";
+        }
+
+        private static PictureBox findPbox(string name, Control.ControlCollection formcontrols)
+        {
+            return formcontrols.Find(name, true)[0] as PictureBox;
+        }
+
+        private static Control findControl(string name, Control.ControlCollection formcontrols)
+        {
+            return formcontrols.Find(name, true)[0] as Control;
+        }
+
+        private static void setPboxImg(PictureBox pictureBox, Bitmap img) => pictureBox.Image = img;
+
+        private static void giveCoordinatesVal(List<int> coordinatelist, int val) => Data._Field[coordinatelist[0], coordinatelist[1]] = val;
+
+        private static void fieldSetBackToWhite( Control.ControlCollection formcontrols, int val)
+        {
+            string name1 = $"_{recentSelectedCoordinates[0] - 1}{recentSelectedCoordinates[1] +(val)}";
+            string name2 = $"_{recentSelectedCoordinates[0] + 1}{recentSelectedCoordinates[1] +(val)}";
+            PictureBox goWhite = findPbox(name1, formcontrols);
+            setPboxImg(goWhite, Properties.Resources.FieldFeher);
+            goWhite = findPbox(name2, formcontrols);
+            setPboxImg(goWhite, Properties.Resources.FieldFeher);
             pieceSelected = false;
         }
 
@@ -76,8 +81,8 @@ namespace Dama
         {
             pieceSelected = true;
             recentSelectedCoordinates = copyCoordinates(coordinatelist);
-            if (Data._Field[coordinatelist[0], coordinatelist[1]] == 2) validMovementWhite(formcontrols, coordinatelist); //white dama piece selected
-            if (Data._Field[coordinatelist[0], coordinatelist[1]] == 1) validMovementBlack(formcontrols, coordinatelist);   //black dama piece selected
+            if (getCoordinatesVal(coordinatelist, 0, 0) == 2) validMovement(formcontrols, coordinatelist, -1); //white dama piece selected
+            if (getCoordinatesVal(coordinatelist, 0, 0) == 1) validMovement(formcontrols, coordinatelist, +1);   //black dama piece selected
         }
 
         private static bool repeatClickCheck(List<int> coordinates)
@@ -93,49 +98,41 @@ namespace Dama
             return result;
         }
 
-        private static List<int> positionOnGameField(Control selectedpiece)
+        private static List<int> positionOnGameField(Control selectedpiece) //returns a list with 2 elements [x,y]
         {
-            List<int> coordinatelist = new List<int>(); 
-            coordinatelist.Add(Convert.ToInt32(selectedpiece.Name[1].ToString()));
-            coordinatelist.Add(Convert.ToInt32(selectedpiece.Name[2].ToString()));
+            List<int> coordinatelist = new List<int>();
+            for (int i = 1; i <= 2; i++) coordinatelist.Add(Convert.ToInt32(selectedpiece.Name[i].ToString()));
             return coordinatelist;
         }
 
-        private static void validMovementBlack(Control.ControlCollection formcontrols, List<int> coordinatelist)
+        private static void validMovement(Control.ControlCollection formcontrols, List<int> coordinatelist, int val)
         {
-            string validmovesName = $"_{coordinatelist[0] + 1}{coordinatelist[1] + 1}";
-            selectionDisplay(formcontrols, positionOnGameField(formcontrols.Find(validmovesName, true)[0] as Control), formcontrols.Find(validmovesName, true)[0] as PictureBox);
-            validmovesName = $"_{coordinatelist[0] - 1}{coordinatelist[1] + 1}";
-            selectionDisplay(formcontrols, positionOnGameField(formcontrols.Find(validmovesName, true)[0] as Control), formcontrols.Find(validmovesName, true)[0] as PictureBox);
+            string validmovesName = $"_{coordinatelist[0] + 1}{coordinatelist[1] +(val)}";
+            try { selectionDisplay(formcontrols, positionOnGameField(findControl(validmovesName, formcontrols)), findPbox(validmovesName, formcontrols)); }
+            catch (IndexOutOfRangeException) { }
+            validmovesName = $"_{coordinatelist[0] - 1}{coordinatelist[1] +(val)}";
+            try { selectionDisplay(formcontrols, positionOnGameField(findControl(validmovesName, formcontrols)), findPbox(validmovesName, formcontrols)); }
+            catch (IndexOutOfRangeException){}
         }
 
         private static void selectionDisplay(Control.ControlCollection formcontrols, List<int> coordinates, PictureBox move)    
         {
             try
             {
-                if (Data._Field[coordinates[0], coordinates[1]]==1) move.Image = Properties.Resources.FeketeHighlight;
-                if (Data._Field[coordinates[0], coordinates[1]]==2) move.Image = Properties.Resources.FeherHighlight;
-                if (Data._Field[coordinates[0], coordinates[1]]==11) move.Image = Properties.Resources.FeketeDamaHighlight;
-                if (Data._Field[coordinates[0], coordinates[1]]==0) move.Image = Properties.Resources.FieldPiros;
-                if (Data._Field[coordinates[0], coordinates[1]]==22) move.Image = Properties.Resources.FeherDamaHighlight;
+                if (getCoordinatesVal(coordinates, 0, 0) == 1) setPboxImg(move, Properties.Resources.FeketeHighlight);
+                if (getCoordinatesVal(coordinates, 0, 0) == 2) setPboxImg(move, Properties.Resources.FeherHighlight);
+                if (getCoordinatesVal(coordinates, 0, 0) == 11) setPboxImg(move, Properties.Resources.FeketeDamaHighlight);
+                if (getCoordinatesVal(coordinates, 0, 0) == 0) setPboxImg(move, Properties.Resources.FieldPiros);
+                if (getCoordinatesVal(coordinates, 0, 0) == 22) setPboxImg(move, Properties.Resources.FeherDamaHighlight);
                 move.Tag = "3";
             }
             catch (IndexOutOfRangeException){}
         }
 
-        private static void validMovementWhite(Control.ControlCollection formcontrols, List<int> coordinatelist)
-        {
-            string validmovesName = $"_{coordinatelist[0] + 1}{coordinatelist[1] - 1}";
-            selectionDisplay(formcontrols, positionOnGameField(formcontrols.Find(validmovesName, true)[0] as Control), formcontrols.Find(validmovesName, true)[0] as PictureBox);
-            validmovesName = $"_{coordinatelist[0] - 1}{coordinatelist[1] - 1}";
-            selectionDisplay(formcontrols, positionOnGameField(formcontrols.Find(validmovesName, true)[0] as Control), formcontrols.Find(validmovesName, true)[0] as PictureBox);
-        }
-
         private static void ClearField(Control.ControlCollection formControll)
         {
-            for (int i = 0; i < formControll.Count; i++) 
-            if ((formControll[i] as PictureBox).Tag == "3")
-            (formControll[i] as PictureBox).Image = Properties.Resources.FieldFeher;
+            for (int i = 0; i < formControll.Count; i++)
+                if ((formControll[i] as PictureBox).Tag == "3") setPboxImg((formControll[i] as PictureBox), Properties.Resources.FieldFeher);
         }
     }
 }
