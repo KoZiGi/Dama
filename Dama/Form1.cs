@@ -45,8 +45,11 @@ namespace Dama
                         default:
                             pbx.Image = Properties.Resources.semmi;
                             break;
-
                     }
+                    pbx.Click += delegate 
+                    {
+                        Game.GameLogic(pbx);  
+                    };
                     pbx.Click += delegate (object sender, EventArgs e) { GameEvents.Position(pbx, this.Controls); };
                     Controls.Add(pbx);
 
@@ -64,13 +67,13 @@ namespace Dama
             pbx.Height = 80;
             if (indent)
             {
-                pbx.Name = $"_{i}{1+2*j}";
+                pbx.Name = $"_{1+2*j}{i}";
                 pbx.Left = 80 + j * 160;
                 pbx.Top = 80 * i;
             }
             else
             {
-                pbx.Name = $"_{i}{2*j}";
+                pbx.Name = $"_{2*j}{i}";
                 pbx.Left = j * 160;
                 pbx.Top = 80 * i;
             }
