@@ -39,20 +39,30 @@ namespace Dama
             Data.selectedIdx[0] = Convert.ToInt32(pbxName.Split('_')[1][0].ToString());
             Data.selectedIdx[1] = Convert.ToInt32(pbxName.Split('_')[1][1].ToString());
         }
-        public static bool CheckBlackFTH()
+        public static bool CheckBlackFTH(int i, int g)
         {
-            for (int i = 0; i < 8; i++)
+            if (i + 2 > 8 && g + 2 > 8 && g - 2 < 0) return false;
+            if (Data._Field[i+2, g + 2] == 0)
             {
-                for (int g = 0; g < 8; g++)
-                {
-                    //if (Data._Field[i,g]==1)
-                }
+                if (Data._Field[i + 1, g + 1] == 2 || Data._Field[i + 1, g + 1] == 22) return true;
+            }
+            if (Data._Field[i + 2, g - 2] == 0)
+            {
+                if (Data._Field[i + 1, g - 1] == 2 || Data._Field[i + 1, g - 1] == 22) return true;
             }
             return false;
         }
-        public static bool CheckWhiteFTH()
+        public static bool CheckWhiteFTH(int i, int g)
         {
-            
+            if (i - 2 < 0 && g + 2 > 8 && g - 2 < 0) return false;
+            if (Data._Field[i - 2, g + 2] == 0)
+            {
+                if (Data._Field[i - 1, g + 1] == 2 || Data._Field[i - 1, g + 1] == 22) return true;
+            }
+            if (Data._Field[i - 2, g - 2] == 0)
+            {
+                if (Data._Field[i - 1, g - 1] == 2 || Data._Field[i - 1, g - 1] == 22) return true;
+            }
             return false;
         }
         public static void InitMove()
