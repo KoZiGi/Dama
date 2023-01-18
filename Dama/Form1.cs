@@ -16,6 +16,7 @@ namespace Dama
         {
             InitializeComponent();
             drawboard();
+            Data.GameForm = this;
             Game.GenGame();
         }
 

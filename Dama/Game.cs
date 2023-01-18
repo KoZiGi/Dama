@@ -12,10 +12,22 @@ namespace Dama
         public static void GameLogic(PictureBox pbox)
         {
             int x = Convert.ToInt32(pbox.Name.Split('_')[1][0].ToString()), y = Convert.ToInt32(pbox.Name.Split('_')[1][1].ToString());
-            MessageBox.Show(Data._Field[x, y].ToString());
             if (Data.selectedIdx[0]==-1 && Data.selectedIdx[1] == -1)
             {
                 SelectPiece(pbox.Name);
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int g = 0; g < 8; g++)
+                    {
+                        if (CheckBlackFTH(i, g)) MessageBox.Show("Fekete tud ütni!");
+                        if (CheckWhiteFTH(i, g)) MessageBox.Show("Fehér tud ütni!");
+                    }
+                }
+            }
+            else
+            {
+                _BadMove(Convert.ToInt32(pbox.Name.Split('_')[1][0].ToString()), Convert.ToInt32(pbox.Name.Split('_')[1][1].ToString()));
+                UpdateDisplay(Data.GameForm.Controls);
             }
         }
         public static void Hit()
@@ -41,7 +53,7 @@ namespace Dama
         }
         public static bool CheckBlackFTH(int i, int g)
         {
-            if (i + 2 > 8 && g + 2 > 8 && g - 2 < 0) return false;
+            if (i + 2 > 7 || g + 2 > 7 || g - 2 < 0) return false;
             if (Data._Field[i+2, g + 2] == 0)
             {
                 if (Data._Field[i + 1, g + 1] == 2 || Data._Field[i + 1, g + 1] == 22) return true;
@@ -54,7 +66,7 @@ namespace Dama
         }
         public static bool CheckWhiteFTH(int i, int g)
         {
-            if (i - 2 < 0 && g + 2 > 8 && g - 2 < 0) return false;
+            if (i - 2 < 0 || g + 2 > 7 || g - 2 < 0) return false;
             if (Data._Field[i - 2, g + 2] == 0)
             {
                 if (Data._Field[i - 1, g + 1] == 2 || Data._Field[i - 1, g + 1] == 22) return true;
@@ -73,13 +85,59 @@ namespace Dama
         {
 
         }
-        public static void Move()
+        public static void _BadMove(int toX, int toY)
         {
-
+            if (Data.selectedIdx[0] != -1 && Data.selectedIdx[1] != -1)
+            {
+                if (Data._Field[toX, toY] == 0)
+                {
+                    int temp = Data._Field[Data.selectedIdx[0], Data.selectedIdx[1]];
+                    Data._Field[toX, toY] = temp;
+                    Data._Field[Data.selectedIdx[0], Data.selectedIdx[1]] = 0;
+                    Data.selectedIdx[0] = -1;
+                    Data.selectedIdx[1] = -1;
+                }
+            }
         }
-        public static void PesantToDama(DamaPiece babu)
+        public static void PesantToDama()
         {
-
+            for (int i = 0; i < 8; i++)
+            {
+                if (Data._Field[0, i] == 2) Data._Field[0, i] = 22;
+                if (Data._Field[7, i] == 1) Data._Field[7, i] = 11;
+            }
+        }
+        public static void UpdateDisplay(Control.ControlCollection pboxes)
+        {
+            foreach (Control pbox in pboxes)
+            {
+                if (pbox is PictureBox)
+                {
+                    int x = Convert.ToInt32(pbox.Name.Split('_')[1][0].ToString()), y = Convert.ToInt32(pbox.Name.Split('_')[1][1].ToString());
+                    DeterminePicture(Data._Field[x, y], pbox as PictureBox);
+                }
+            }
+        }
+        private static void DeterminePicture(int inp, PictureBox pbx)
+        {
+            switch (inp)
+            {
+                case 1:
+                    pbx.Image = Properties.Resources.Fekete;
+                    break;
+                case 11:
+                    pbx.Image = Properties.Resources.FeketeDama;
+                    break;
+                case 2:
+                    pbx.Image = Properties.Resources.Feher;
+                    break;
+                case 22:
+                    pbx.Image = Properties.Resources.FeherDama;
+                    break;
+                default:
+                    pbx.Image = Properties.Resources.semmi;
+                    break;
+            }
         }
         public static void Switch() => Data.isBlack = !Data.isBlack;
         private static int DeterminePiece(int x, int y, bool indent) => 
