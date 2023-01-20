@@ -12,106 +12,77 @@ namespace Dama
 {
     class GameEvents
     {
-
+        public static bool isBlackOrWhiteTurn = true; //this variable shows wich players turn is present, true is white, false is black
         static bool pieceSelected = false;
-        static List<int> recentSelectedCoordinates = new List<int>();
+        public static List<int> recentSelectedCoordinates = new List<int>();
+        static int[] pieceValues = { 1, 2, 11, 0, 22 };
+        static Bitmap[] pictures = { Properties.Resources.FeketeHighlight, Properties.Resources.FeherHighlight, Properties.Resources.FeketeDamaHighlight, Properties.Resources.FieldPiros, Properties.Resources.FeherDamaHighlight };
 
-        public static void Position(object sender, Control.ControlCollection formcontrols)
+        public static void PlayerTurnValidation(object sender, Control.ControlCollection formcontrols)
         {
             Control selectedpiece = sender as Control;
-            List<int> coordinatelist = positionOnGameField(selectedpiece);
-            if (!pieceSelected) selectedPieceDisplayAndMovement(coordinatelist, formcontrols);
-            else if (repeatClickCheck(coordinatelist))
-            {
-                if (getCoordinatesVal(recentSelectedCoordinates, 0, 0) == 1) fieldSetBackToWhite(formcontrols, +1);
-                else if (getCoordinatesVal(recentSelectedCoordinates, 0, 0) == 2) fieldSetBackToWhite(formcontrols, -1);
-            }
-            else if (pieceSelected) 
-            {
-                if(getCoordinatesVal(recentSelectedCoordinates, 0, 0) == 2) afterMovementSetting(false, 2, selectedpiece, coordinatelist, formcontrols);
-                if(getCoordinatesVal(recentSelectedCoordinates, 0, 0) == 1) afterMovementSetting(true, 1, selectedpiece, coordinatelist, formcontrols);
-                pieceSelected = false;
-                ClearField(formcontrols);
-            }
+            List<int> coordinatelist = QualityOfLifeFuncs.positionOnGameField(selectedpiece);
+            if (QualityOfLifeFuncs.SelectionValidate(isBlackOrWhiteTurn, selectedpiece, true)) Move(coordinatelist, formcontrols, selectedpiece);  //white piece click case
+            else if (QualityOfLifeFuncs.SelectionValidate(isBlackOrWhiteTurn, selectedpiece, false))  Move(coordinatelist, formcontrols, selectedpiece); //black piece click case
+            else Move(coordinatelist, formcontrols, selectedpiece);
         }
 
-        private static int getCoordinatesVal(List<int> recentSelectedCoordinates, int x, int y)
+        private static void Move(List<int> coordinatelist, Control.ControlCollection formcontrols, Control selectedpiece)
         {
-            return Data._Field[recentSelectedCoordinates[0]+(x), recentSelectedCoordinates[1]+(y)];
+            if (!pieceSelected) selectedPieceDisplayAndMovement(coordinatelist, formcontrols);  //this makes the posible fields red where the piece could move to
+            else if (QualityOfLifeFuncs.repeatClickCheck(coordinatelist))   //this checks if the click on the piece was a repeat click on the same piece or not
+            {
+                if (QualityOfLifeFuncs.getCoordinatesVal(recentSelectedCoordinates) == 1) fieldSetBackToWhite(formcontrols, +1);
+                else if (QualityOfLifeFuncs.getCoordinatesVal(recentSelectedCoordinates) == 2) fieldSetBackToWhite(formcontrols, -1);
+            }
+            else if (pieceSelected) //if everything is valid then this will make the move or the attack
+            {
+                if (QualityOfLifeFuncs.getCoordinatesVal(recentSelectedCoordinates) == 2) afterMovementSetting(false, 2, selectedpiece, coordinatelist, formcontrols);
+                if (QualityOfLifeFuncs.getCoordinatesVal(recentSelectedCoordinates) == 1) afterMovementSetting(true, 1, selectedpiece, coordinatelist, formcontrols);
+                pieceSelected = false;
+                QualityOfLifeFuncs.ClearField(formcontrols);
+                isBlackOrWhiteTurn = !isBlackOrWhiteTurn;
+            }
         }
 
         private static void afterMovementSetting(bool isBlack, int val, Control selectedpiece, List<int> coordinatelist, Control.ControlCollection formcontrols)
         {
-            if (isBlack) setPboxImg(selectedpiece as PictureBox, Properties.Resources.Fekete);
-            else setPboxImg(selectedpiece as PictureBox, Properties.Resources.Feher);
-            giveCoordinatesVal(coordinatelist, val);          
-            giveCoordinatesVal(recentSelectedCoordinates, 0);
+            if (isBlack) QualityOfLifeFuncs.setPboxImg(selectedpiece as PictureBox, Properties.Resources.Fekete);
+            else QualityOfLifeFuncs.setPboxImg(selectedpiece as PictureBox, Properties.Resources.Feher);
+            QualityOfLifeFuncs.giveCoordinatesVal(coordinatelist, val);
+            QualityOfLifeFuncs.giveCoordinatesVal(recentSelectedCoordinates, 0);
             string name = $"_{recentSelectedCoordinates[0]}{recentSelectedCoordinates[1]}";
-            PictureBox goWhite = findPbox(name, formcontrols);
-            setPboxImg(goWhite, Properties.Resources.FieldFeher);
+            PictureBox goWhite = QualityOfLifeFuncs.findPbox(name, formcontrols);
+            QualityOfLifeFuncs.setPboxImg(goWhite, Properties.Resources.FieldFeher);
             (selectedpiece as PictureBox).Tag = "0";
         }
-
-        private static PictureBox findPbox(string name, Control.ControlCollection formcontrols)
-        {
-            return formcontrols.Find(name, true)[0] as PictureBox;
-        }
-
-        private static Control findControl(string name, Control.ControlCollection formcontrols)
-        {
-            return formcontrols.Find(name, true)[0] as Control;
-        }
-
-        private static void setPboxImg(PictureBox pictureBox, Bitmap img) => pictureBox.Image = img;
-
-        private static void giveCoordinatesVal(List<int> coordinatelist, int val) => Data._Field[coordinatelist[0], coordinatelist[1]] = val;
 
         private static void fieldSetBackToWhite( Control.ControlCollection formcontrols, int val)
         {
             string name1 = $"_{recentSelectedCoordinates[0] - 1}{recentSelectedCoordinates[1] +(val)}";
             string name2 = $"_{recentSelectedCoordinates[0] + 1}{recentSelectedCoordinates[1] +(val)}";
-            PictureBox goWhite = findPbox(name1, formcontrols);
-            setPboxImg(goWhite, Properties.Resources.FieldFeher);
-            goWhite = findPbox(name2, formcontrols);
-            setPboxImg(goWhite, Properties.Resources.FieldFeher);
+            PictureBox goWhite = QualityOfLifeFuncs.findPbox(name1, formcontrols);
+            QualityOfLifeFuncs.setPboxImg(goWhite, Properties.Resources.FieldFeher);
+            goWhite = QualityOfLifeFuncs.findPbox(name2, formcontrols);
+            QualityOfLifeFuncs.setPboxImg(goWhite, Properties.Resources.FieldFeher);
             pieceSelected = false;
         }
 
         private static void selectedPieceDisplayAndMovement(List<int> coordinatelist, Control.ControlCollection formcontrols)
         {
             pieceSelected = true;
-            recentSelectedCoordinates = copyCoordinates(coordinatelist);
-            if (getCoordinatesVal(coordinatelist, 0, 0) == 2) validMovement(formcontrols, coordinatelist, -1); //white dama piece selected
-            if (getCoordinatesVal(coordinatelist, 0, 0) == 1) validMovement(formcontrols, coordinatelist, +1);   //black dama piece selected
-        }
-
-        private static bool repeatClickCheck(List<int> coordinates)
-        {
-            for (int i = 0; i < coordinates.Count; i++) if(coordinates[i] != recentSelectedCoordinates[i]) return false;
-            return true;
-        }
-
-        private static List<int> copyCoordinates(List<int> coordinatelist)
-        {
-            List<int> result = new List<int>();
-            for (int i = 0; i < coordinatelist.Count; i++) result.Add(coordinatelist[i]);
-            return result;
-        }
-
-        private static List<int> positionOnGameField(Control selectedpiece) //returns a list with 2 elements [x,y]
-        {
-            List<int> coordinatelist = new List<int>();
-            for (int i = 1; i <= 2; i++) coordinatelist.Add(Convert.ToInt32(selectedpiece.Name[i].ToString()));
-            return coordinatelist;
+            recentSelectedCoordinates = QualityOfLifeFuncs.copyCoordinates(coordinatelist);
+            if (QualityOfLifeFuncs.getCoordinatesValForMove(coordinatelist, 0, 0) == 2) validMovement(formcontrols, coordinatelist, -1); //white dama piece selected
+            if (QualityOfLifeFuncs.getCoordinatesValForMove(coordinatelist, 0, 0) == 1) validMovement(formcontrols, coordinatelist, +1);   //black dama piece selected
         }
 
         private static void validMovement(Control.ControlCollection formcontrols, List<int> coordinatelist, int val)
         {
             string validmovesName = $"_{coordinatelist[0] + 1}{coordinatelist[1] +(val)}";
-            try { selectionDisplay(formcontrols, positionOnGameField(findControl(validmovesName, formcontrols)), findPbox(validmovesName, formcontrols)); }
+            try { selectionDisplay(formcontrols, QualityOfLifeFuncs.positionOnGameField(QualityOfLifeFuncs.findControl(validmovesName, formcontrols)), QualityOfLifeFuncs.findPbox(validmovesName, formcontrols)); }
             catch (IndexOutOfRangeException) { }
             validmovesName = $"_{coordinatelist[0] - 1}{coordinatelist[1] +(val)}";
-            try { selectionDisplay(formcontrols, positionOnGameField(findControl(validmovesName, formcontrols)), findPbox(validmovesName, formcontrols)); }
+            try { selectionDisplay(formcontrols, QualityOfLifeFuncs.positionOnGameField(QualityOfLifeFuncs.findControl(validmovesName, formcontrols)), QualityOfLifeFuncs.findPbox(validmovesName, formcontrols)); }
             catch (IndexOutOfRangeException){}
         }
 
@@ -119,20 +90,10 @@ namespace Dama
         {
             try
             {
-                if (getCoordinatesVal(coordinates, 0, 0) == 1) setPboxImg(move, Properties.Resources.FeketeHighlight);
-                if (getCoordinatesVal(coordinates, 0, 0) == 2) setPboxImg(move, Properties.Resources.FeherHighlight);
-                if (getCoordinatesVal(coordinates, 0, 0) == 11) setPboxImg(move, Properties.Resources.FeketeDamaHighlight);
-                if (getCoordinatesVal(coordinates, 0, 0) == 0) setPboxImg(move, Properties.Resources.FieldPiros);
-                if (getCoordinatesVal(coordinates, 0, 0) == 22) setPboxImg(move, Properties.Resources.FeherDamaHighlight);
+                for (int i = 0; i < pieceValues.Length; i++) if(QualityOfLifeFuncs.getCoordinatesVal(coordinates) == pieceValues[i]) QualityOfLifeFuncs.setPboxImg(move, pictures[i]);
                 move.Tag = "3";
             }
             catch (IndexOutOfRangeException){}
-        }
-
-        private static void ClearField(Control.ControlCollection formControll)
-        {
-            for (int i = 0; i < formControll.Count; i++)
-                if ((formControll[i] as PictureBox).Tag == "3") setPboxImg((formControll[i] as PictureBox), Properties.Resources.FieldFeher);
         }
     }
 }
