@@ -18,6 +18,12 @@ namespace Dama
 
         public static int getCoordinatesVal(List<int> SelectedCoordinates) {return Data._Field[SelectedCoordinates[0], SelectedCoordinates[1]];}
 
+        public static string convertCoordinatesToName(List<int> coordinatelist) { return $"_{coordinatelist[0]}{coordinatelist[1]}";}
+
+        public static void setPboxImg(PictureBox pictureBox, Bitmap img) => pictureBox.Image = img;
+
+        public static void giveCoordinatesVal(List<int> coordinatelist, int val) => Data._Field[coordinatelist[0], coordinatelist[1]] = val;
+
         public static bool repeatClickCheck(List<int> coordinates)
         {
             for (int i = 0; i < coordinates.Count; i++) if (coordinates[i] != GameEvents.recentSelectedCoordinates[i]) return false;
@@ -27,7 +33,10 @@ namespace Dama
         public static void ClearField(Control.ControlCollection formControll)
         {
             for (int i = 0; i < formControll.Count; i++)
+            {
                 if ((formControll[i] as PictureBox).Tag == "3") QualityOfLifeFuncs.setPboxImg((formControll[i] as PictureBox), imgForClearing(getCoordinatesVal(positionOnGameField(formControll[i] as PictureBox))));
+                (formControll[i] as PictureBox).Tag = "";
+            }
         }
 
         private static Bitmap imgForClearing(int value)
@@ -53,19 +62,23 @@ namespace Dama
         public static bool SelectionValidate(bool WhiteOrBlack, Control SelectedPiece, bool isWhite) //this funcs returns if the player has the right to move the specific piece
         {
             if (WhiteOrBlack && QualityOfLifeFuncs.getCoordinatesVal(QualityOfLifeFuncs.positionOnGameField(SelectedPiece)) == 2 && isWhite) return true;
-            if (WhiteOrBlack==false && QualityOfLifeFuncs.getCoordinatesVal(QualityOfLifeFuncs.positionOnGameField(SelectedPiece)) == 1 && isWhite==false) return true;
+            if (!WhiteOrBlack && QualityOfLifeFuncs.getCoordinatesVal(QualityOfLifeFuncs.positionOnGameField(SelectedPiece)) == 1 && !isWhite) return true;
             return false;
         }
 
-        public static void TurnChange(Control.ControlCollection formcontrols)
+        public static void TurnChange(Control.ControlCollection formcontrols, int val, List<int> coordinatelist)
         {
             GameEvents.pieceSelected = false;
             ClearField(formcontrols);
             GameEvents.isBlackOrWhiteTurn = !GameEvents.isBlackOrWhiteTurn;
+            QualityOfLifeFuncs.giveCoordinatesVal(coordinatelist, val);
         }
 
-        public static void setPboxImg(PictureBox pictureBox, Bitmap img) => pictureBox.Image = img;
-
-        public static void giveCoordinatesVal(List<int> coordinatelist, int val) => Data._Field[coordinatelist[0], coordinatelist[1]] = val;
+        public static int DamaCheck(List<int> coordinates, bool isWhite, int value)   //this function check if the recently moved piece stepped into the dama fields  
+        {
+            if (isWhite && coordinates[0] == 0) return 22;
+            if (!isWhite && coordinates[0] == 7) return 11;
+            return value;
+        }
     }
 }

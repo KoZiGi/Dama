@@ -55,7 +55,7 @@ namespace Dama
                 PictureBox goWhite = QualityOfLifeFuncs.findPbox(name, formcontrols);
                 QualityOfLifeFuncs.setPboxImg(goWhite, Properties.Resources.FieldFeher);
                 (selectedpiece as PictureBox).Tag = "0";
-                QualityOfLifeFuncs.TurnChange(formcontrols);
+                QualityOfLifeFuncs.TurnChange(formcontrols, val, coordinatelist);
             }
             else QualityOfLifeFuncs.ClearField(formcontrols);
         }
