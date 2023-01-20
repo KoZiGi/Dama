@@ -24,7 +24,7 @@ namespace Dama
             List<int> coordinatelist = QualityOfLifeFuncs.positionOnGameField(selectedpiece);
             if (QualityOfLifeFuncs.SelectionValidate(isBlackOrWhiteTurn, selectedpiece, true)) Move(coordinatelist, formcontrols, selectedpiece);  //white piece click case
             else if (QualityOfLifeFuncs.SelectionValidate(isBlackOrWhiteTurn, selectedpiece, false))  Move(coordinatelist, formcontrols, selectedpiece); //black piece click case
-            else Move(coordinatelist, formcontrols, selectedpiece);
+            else if(pieceSelected) Move(coordinatelist, formcontrols, selectedpiece);
         }
 
         private static void Move(List<int> coordinatelist, Control.ControlCollection formcontrols, Control selectedpiece)
