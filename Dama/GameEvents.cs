@@ -13,10 +13,11 @@ namespace Dama
     class GameEvents
     {
         public static bool isBlackOrWhiteTurn = true; //this variable shows wich players turn is present, true is white, false is black
-        static bool pieceSelected = false;
+        public static bool pieceSelected = false;
         public static List<int> recentSelectedCoordinates = new List<int>();
-        static int[] pieceValues = { 1, 2, 11, 0, 22 };
-        static Bitmap[] pictures = { Properties.Resources.FeketeHighlight, Properties.Resources.FeherHighlight, Properties.Resources.FeketeDamaHighlight, Properties.Resources.FieldPiros, Properties.Resources.FeherDamaHighlight };
+        public static int[] pieceValues = { 1, 2, 11, 0, 22 };
+        public static Bitmap[] Highlightpictures = { Properties.Resources.FeketeHighlight, Properties.Resources.FeherHighlight, Properties.Resources.FeketeDamaHighlight, Properties.Resources.FieldPiros, Properties.Resources.FeherDamaHighlight };
+        public static Bitmap[] Naturalpictures = { Properties.Resources.Fekete, Properties.Resources.Feher, Properties.Resources.FeketeDama, Properties.Resources.FieldFeher, Properties.Resources.FeherDama };
 
         public static void PlayerTurnValidation(object sender, Control.ControlCollection formcontrols)
         {
@@ -39,22 +40,24 @@ namespace Dama
             {
                 if (QualityOfLifeFuncs.getCoordinatesVal(recentSelectedCoordinates) == 2) afterMovementSetting(false, 2, selectedpiece, coordinatelist, formcontrols);
                 if (QualityOfLifeFuncs.getCoordinatesVal(recentSelectedCoordinates) == 1) afterMovementSetting(true, 1, selectedpiece, coordinatelist, formcontrols);
-                pieceSelected = false;
-                QualityOfLifeFuncs.ClearField(formcontrols);
-                isBlackOrWhiteTurn = !isBlackOrWhiteTurn;
             }
         }
 
         private static void afterMovementSetting(bool isBlack, int val, Control selectedpiece, List<int> coordinatelist, Control.ControlCollection formcontrols)
         {
-            if (isBlack) QualityOfLifeFuncs.setPboxImg(selectedpiece as PictureBox, Properties.Resources.Fekete);
-            else QualityOfLifeFuncs.setPboxImg(selectedpiece as PictureBox, Properties.Resources.Feher);
-            QualityOfLifeFuncs.giveCoordinatesVal(coordinatelist, val);
-            QualityOfLifeFuncs.giveCoordinatesVal(recentSelectedCoordinates, 0);
-            string name = $"_{recentSelectedCoordinates[0]}{recentSelectedCoordinates[1]}";
-            PictureBox goWhite = QualityOfLifeFuncs.findPbox(name, formcontrols);
-            QualityOfLifeFuncs.setPboxImg(goWhite, Properties.Resources.FieldFeher);
-            (selectedpiece as PictureBox).Tag = "0";
+            if ((selectedpiece as PictureBox).Tag == "3")
+            {
+                if (isBlack) QualityOfLifeFuncs.setPboxImg(selectedpiece as PictureBox, Properties.Resources.Fekete);
+                else QualityOfLifeFuncs.setPboxImg(selectedpiece as PictureBox, Properties.Resources.Feher);
+                QualityOfLifeFuncs.giveCoordinatesVal(coordinatelist, val);
+                QualityOfLifeFuncs.giveCoordinatesVal(recentSelectedCoordinates, 0);
+                string name = $"_{recentSelectedCoordinates[0]}{recentSelectedCoordinates[1]}";
+                PictureBox goWhite = QualityOfLifeFuncs.findPbox(name, formcontrols);
+                QualityOfLifeFuncs.setPboxImg(goWhite, Properties.Resources.FieldFeher);
+                (selectedpiece as PictureBox).Tag = "0";
+                QualityOfLifeFuncs.TurnChange(formcontrols);
+            }
+            else QualityOfLifeFuncs.ClearField(formcontrols);
         }
 
         private static void fieldSetBackToWhite( Control.ControlCollection formcontrols, int val)
@@ -90,7 +93,7 @@ namespace Dama
         {
             try
             {
-                for (int i = 0; i < pieceValues.Length; i++) if(QualityOfLifeFuncs.getCoordinatesVal(coordinates) == pieceValues[i]) QualityOfLifeFuncs.setPboxImg(move, pictures[i]);
+                for (int i = 0; i < pieceValues.Length; i++) if(QualityOfLifeFuncs.getCoordinatesVal(coordinates) == pieceValues[i]) QualityOfLifeFuncs.setPboxImg(move, Highlightpictures[i]);
                 move.Tag = "3";
             }
             catch (IndexOutOfRangeException){}

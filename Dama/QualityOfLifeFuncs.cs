@@ -27,7 +27,13 @@ namespace Dama
         public static void ClearField(Control.ControlCollection formControll)
         {
             for (int i = 0; i < formControll.Count; i++)
-                if ((formControll[i] as PictureBox).Tag == "3") QualityOfLifeFuncs.setPboxImg((formControll[i] as PictureBox), Properties.Resources.FieldFeher);
+                if ((formControll[i] as PictureBox).Tag == "3") QualityOfLifeFuncs.setPboxImg((formControll[i] as PictureBox), imgForClearing(getCoordinatesVal(positionOnGameField(formControll[i] as PictureBox))));
+        }
+
+        private static Bitmap imgForClearing(int value)
+        {
+            for (int i = 0; i < GameEvents.pieceValues.Length; i++) if (GameEvents.pieceValues[i] == value) return GameEvents.Naturalpictures[i];
+            return null;
         }
 
         public static List<int> positionOnGameField(Control selectedpiece) //returns a list with 2 elements [x,y]
@@ -49,6 +55,13 @@ namespace Dama
             if (WhiteOrBlack && QualityOfLifeFuncs.getCoordinatesVal(QualityOfLifeFuncs.positionOnGameField(SelectedPiece)) == 2 && isWhite) return true;
             if (WhiteOrBlack==false && QualityOfLifeFuncs.getCoordinatesVal(QualityOfLifeFuncs.positionOnGameField(SelectedPiece)) == 1 && isWhite==false) return true;
             return false;
+        }
+
+        public static void TurnChange(Control.ControlCollection formcontrols)
+        {
+            GameEvents.pieceSelected = false;
+            ClearField(formcontrols);
+            GameEvents.isBlackOrWhiteTurn = !GameEvents.isBlackOrWhiteTurn;
         }
 
         public static void setPboxImg(PictureBox pictureBox, Bitmap img) => pictureBox.Image = img;
