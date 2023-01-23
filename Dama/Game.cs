@@ -11,35 +11,32 @@ namespace Dama
     {
         public static void GameLogic(PictureBox pbox)
         {
-            int x = Convert.ToInt32(pbox.Name.Split('_')[1][0].ToString()), y = Convert.ToInt32(pbox.Name.Split('_')[1][1].ToString());
-            if (Data.selectedIdx[0]==-1 && Data.selectedIdx[1] == -1)
+            if (Data.selectedIdx[0] == -1 && Data.selectedIdx[1] == -1)
             {
                 SelectPiece(pbox.Name);
-                for (int i = 0; i < 8; i++)
-                {
-                    for (int g = 0; g < 8; g++)
-                    {
-                        switch (Data._Field[i, g])
-                        {
-                            case 1:
-                                if (CheckBlackFTH(i, g)) MessageBox.Show($"Fekete tud ütni\nX:{g} Y:{i}");
-                                break;
-                            case 2:
-                                if (CheckWhiteFTH(i, g)) MessageBox.Show($"Fehér tud ütni\nX:{g} Y:{i}");
-                                break;
-                        }
-                    }
-                }
+                if (CheckIfCanHit()) MessageBox.Show("Tud ütni");
             }
             else
             {
-                _BadMove(Convert.ToInt32(pbox.Name.Split('_')[1][0].ToString()), Convert.ToInt32(pbox.Name.Split('_')[1][1].ToString()));
+                Move(GetCoords(pbox.Name)[0], GetCoords(pbox.Name)[1]);
+                PesantToDama();
                 UpdateDisplay(Data.GameForm.Controls);
+                Switch();
             }
         }
-        public static void Hit()
+        private static int[] GetCoords(string controlName) => new int[2] { Convert.ToInt32(controlName[1].ToString()), Convert.ToInt32(controlName[2].ToString()) };
+        private static void SelectPiece(string pbxName) => Data.selectedIdx = GetCoords(pbxName);
+        private static bool CheckIfCanHit()
         {
-
+            for (int i = 0; i < 8; i++)
+            {
+                for (int g = 0; g < 8; g++)
+                {
+                    if (Data.isBlack && Data._Field[i, g] == 1) if (CheckBlackFTH(i, g)) return true;
+                    else if (!Data.isBlack && Data._Field[i, g]==2) if (CheckWhiteFTH(i, g)) return true; 
+                }
+            }
+            return false;
         }
         public static void GenGame()
         {
@@ -52,11 +49,6 @@ namespace Dama
                 }
                 indent = !indent;
             }
-        }
-        public static void SelectPiece(string pbxName)
-        {
-            Data.selectedIdx[0] = Convert.ToInt32(pbxName.Split('_')[1][0].ToString());
-            Data.selectedIdx[1] = Convert.ToInt32(pbxName.Split('_')[1][1].ToString());
         }
         public static bool CheckBlackFTH(int i, int g)
         {
@@ -96,26 +88,34 @@ namespace Dama
             }
             return false;
         }
-        public static void InitMove()
-        {
-            
-        }
-        public static void CheckValid(bool canhit)
+        private static void Swap()
         {
 
         }
-        public static void _BadMove(int toX, int toY)
+        //ALERTA: nincs kész
+        public static void Move(int toX, int toY)
         {
-            if (Data.selectedIdx[0] != -1 && Data.selectedIdx[1] != -1)
+            if (Data.selectedIdx[0] == -1 && Data.selectedIdx[1] == -1) return;
+            if (Data.isBlack&&Data._Field[Data.selectedIdx[1], Data.selectedIdx[0]] == 1)
             {
-                if (Data._Field[toY, toX] == 0)
+                if (CheckBlackFTH(Data.selectedIdx[1], Data.selectedIdx[0]))
                 {
-                    int temp = Data._Field[Data.selectedIdx[1], Data.selectedIdx[0]];
-                    Data._Field[toY, toX] = temp;
-                    Data._Field[Data.selectedIdx[1], Data.selectedIdx[0]] = 0;
-                    Data.selectedIdx[0] = -1;
-                    Data.selectedIdx[1] = -1;
+                    if (Data.selectedIdx[1] + 2 == toY)
+                    {
+                        Swap();
+                    }        
                 }
+                else
+                {
+                    if (Data.selectedIdx[1] + 1 == toY)
+                    {
+                        Swap();
+                    }
+                }
+            }
+            else if (!Data.isBlack&&Data._Field[Data.selectedIdx[1], Data.selectedIdx[0]] == 2)
+            {
+
             }
         }
         public static void PesantToDama()
