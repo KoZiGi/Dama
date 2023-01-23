@@ -19,8 +19,15 @@ namespace Dama
                 {
                     for (int g = 0; g < 8; g++)
                     {
-                        if (CheckBlackFTH(i, g)) MessageBox.Show("Fekete tud ütni!");
-                        if (CheckWhiteFTH(i, g)) MessageBox.Show("Fehér tud ütni!");
+                        switch (Data._Field[i, g])
+                        {
+                            case 1:
+                                if (CheckBlackFTH(i, g)) MessageBox.Show($"Fekete tud ütni\nX:{g} Y:{i}");
+                                break;
+                            case 2:
+                                if (CheckWhiteFTH(i, g)) MessageBox.Show($"Fehér tud ütni\nX:{g} Y:{i}");
+                                break;
+                        }
                     }
                 }
             }
@@ -41,7 +48,7 @@ namespace Dama
             {
                 for (int g = 0; g < 8; g++)
                 {
-                    Data._Field[i, g] = DeterminePiece(i, g, indent);
+                    Data._Field[i, g] = DeterminePiece(g, i, indent);
                 }
                 indent = !indent;
             }
@@ -53,27 +60,39 @@ namespace Dama
         }
         public static bool CheckBlackFTH(int i, int g)
         {
-            if (i + 2 > 7 || g + 2 > 7 || g - 2 < 0) return false;
-            if (Data._Field[i+2, g + 2] == 0)
+            if (i + 2 > 7) return false;
+            if (g + 2 < 8)
             {
-                if (Data._Field[i + 1, g + 1] == 2 || Data._Field[i + 1, g + 1] == 22) return true;
+                if (Data._Field[i+2, g + 2] == 0)
+                {
+                    return Data._Field[i + 1, g + 1] == 2 || Data._Field[i + 1, g + 1] == 22;
+                }
             }
-            if (Data._Field[i + 2, g - 2] == 0)
+            if (g - 2 > -1)
             {
-                if (Data._Field[i + 1, g - 1] == 2 || Data._Field[i + 1, g - 1] == 22) return true;
+                if (Data._Field[i + 2, g - 2] == 0)
+                {
+                    return Data._Field[i + 1, g - 1] == 2 || Data._Field[i + 1, g - 1] == 22;
+                }
             }
             return false;
         }
         public static bool CheckWhiteFTH(int i, int g)
         {
-            if (i - 2 < 0 || g + 2 > 7 || g - 2 < 0) return false;
-            if (Data._Field[i - 2, g + 2] == 0)
+            if (i - 2 < 0) return false;
+            if (g + 2 < 8) 
             {
-                if (Data._Field[i - 1, g + 1] == 2 || Data._Field[i - 1, g + 1] == 22) return true;
+                if (Data._Field[i - 2, g + 2] == 0)
+                {
+                    return Data._Field[i - 1, g + 1] == 1 || Data._Field[i - 1, g + 1] == 11;
+                }
             }
-            if (Data._Field[i - 2, g - 2] == 0)
+            if (g - 2 > -1)
             {
-                if (Data._Field[i - 1, g - 1] == 2 || Data._Field[i - 1, g - 1] == 22) return true;
+                if (Data._Field[i - 2, g - 2] == 0)
+                {
+                    return Data._Field[i - 1, g - 1] == 1 || Data._Field[i - 1, g - 1] == 11;
+                }
             }
             return false;
         }
@@ -89,11 +108,11 @@ namespace Dama
         {
             if (Data.selectedIdx[0] != -1 && Data.selectedIdx[1] != -1)
             {
-                if (Data._Field[toX, toY] == 0)
+                if (Data._Field[toY, toX] == 0)
                 {
-                    int temp = Data._Field[Data.selectedIdx[0], Data.selectedIdx[1]];
-                    Data._Field[toX, toY] = temp;
-                    Data._Field[Data.selectedIdx[0], Data.selectedIdx[1]] = 0;
+                    int temp = Data._Field[Data.selectedIdx[1], Data.selectedIdx[0]];
+                    Data._Field[toY, toX] = temp;
+                    Data._Field[Data.selectedIdx[1], Data.selectedIdx[0]] = 0;
                     Data.selectedIdx[0] = -1;
                     Data.selectedIdx[1] = -1;
                 }
@@ -114,7 +133,7 @@ namespace Dama
                 if (pbox is PictureBox)
                 {
                     int x = Convert.ToInt32(pbox.Name.Split('_')[1][0].ToString()), y = Convert.ToInt32(pbox.Name.Split('_')[1][1].ToString());
-                    DeterminePicture(Data._Field[x, y], pbox as PictureBox);
+                    DeterminePicture(Data._Field[y, x], pbox as PictureBox);
                 }
             }
         }
@@ -140,12 +159,17 @@ namespace Dama
             }
         }
         public static void Switch() => Data.isBlack = !Data.isBlack;
-        private static int DeterminePiece(int x, int y, bool indent) => 
-            (y == 4 || y == 3) ? 0 :
-                y < 3 ?
-                    indent ? x % 2 == 0 ? 0 : 1 : x % 2 == 0 ? 1 : 0 :
-                y > 4 ?
-                    indent ? x % 2 == 0 ? 0 : 2 : x % 2 == 0 ? 2 : 0 :
-            0;
+        private static int DeterminePiece(int x, int y, bool indent) =>
+            (y == 3 || y == 4) ? 0 :
+            (y < 3) ?
+                indent ?
+                    x % 2 == 0 ? 0 : 1 :
+                    x % 2 == 0 ? 1 : 0 :
+            (y > 4) ?
+                indent ?
+                    x % 2 == 0 ? 0 : 2 :
+                    x % 2 == 0 ? 2 : 0
+            : 0;
+                    
     }
 }
