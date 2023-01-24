@@ -14,29 +14,32 @@ namespace Dama
             if (Data.selectedIdx[0] == -1 && Data.selectedIdx[1] == -1)
             {
                 SelectPiece(pbox.Name);
-                if (CheckIfCanHit()) MessageBox.Show("Tud ütni");
+                UpdateDisplay(Data.GameForm.Controls);
+                bool[] canhit = CheckIfCanHit();
+                if (canhit[0]) MessageBox.Show($"Tud ütni {(canhit[1] ? "Fekete" : "Fehér")}");
             }
             else
             {
                 Move(GetCoords(pbox.Name)[0], GetCoords(pbox.Name)[1]);
+                ResetSelect();
                 PesantToDama();
                 UpdateDisplay(Data.GameForm.Controls);
-                Switch();
             }
         }
+        private static void ResetSelect() => Data.selectedIdx = new int[2] { -1, -1 };
         private static int[] GetCoords(string controlName) => new int[2] { Convert.ToInt32(controlName[1].ToString()), Convert.ToInt32(controlName[2].ToString()) };
         private static void SelectPiece(string pbxName) => Data.selectedIdx = GetCoords(pbxName);
-        private static bool CheckIfCanHit()
+        private static bool[] CheckIfCanHit()
         {
             for (int i = 0; i < 8; i++)
             {
                 for (int g = 0; g < 8; g++)
                 {
-                    if (Data.isBlack && Data._Field[i, g] == 1) if (CheckBlackFTH(i, g)) return true;
-                    else if (!Data.isBlack && Data._Field[i, g]==2) if (CheckWhiteFTH(i, g)) return true; 
+                    if (Data.isBlack && Data._Field[i, g] == 1) if (CheckBlackFTH(i, g)) return new bool[] { true, true};
+                    else if (!Data.isBlack && Data._Field[i, g]==2) if (CheckWhiteFTH(i, g)) return new bool[] { true, false }; 
                 }
             }
-            return false;
+            return new bool[] { false, false };
         }
         public static void GenGame()
         {
@@ -88,34 +91,75 @@ namespace Dama
             }
             return false;
         }
-        private static void Swap()
+        private static void Swap(int fromX, int fromY, int toX, int toY)
         {
-
+            int temp = Data._Field[fromY, fromX];
+            Data._Field[fromY, fromX] = Data._Field[toY, toX];
+            Data._Field[toY, toX] = temp;
         }
-        //ALERTA: nincs kész
+        private static void Murder(int X, int Y) => Data._Field[Y, X] = 0;
+        //ALERTA: hibakezelés kellene. | kötelezettség is kellene
         public static void Move(int toX, int toY)
         {
             if (Data.selectedIdx[0] == -1 && Data.selectedIdx[1] == -1) return;
-            if (Data.isBlack&&Data._Field[Data.selectedIdx[1], Data.selectedIdx[0]] == 1)
+            if (Data._Field[Data.selectedIdx[1], Data.selectedIdx[0]] != 0)
             {
-                if (CheckBlackFTH(Data.selectedIdx[1], Data.selectedIdx[0]))
+                if (Data.isBlack)
                 {
-                    if (Data.selectedIdx[1] + 2 == toY)
+
+                    if (CheckBlackFTH(Data.selectedIdx[1], Data.selectedIdx[0]))
                     {
-                        Swap();
-                    }        
+                        if (Data.selectedIdx[1] + 2 == toY && (Data.selectedIdx[0] + 2 == toX || Data.selectedIdx[0] - 2 == toX))
+                        {
+                            Swap(Data.selectedIdx[0], Data.selectedIdx[1], toX, toY);
+                            Murder(Data.selectedIdx[0]+2==toX ? Data.selectedIdx[0]+1 : Data.selectedIdx[0]-1 ,Data.selectedIdx[1]+1);
+                            UpdateDisplay(Data.GameForm.Controls);
+                            if (CheckBlackFTH(toY, toX)) Data.selectedIdx = new int[2] { toX, toY };
+                            else
+                            {
+                                ResetSelect();
+                                Switch();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (Data.selectedIdx[1] + 1 == toY && (Data.selectedIdx[0] + 1 == toX || Data.selectedIdx[0] - 1 == toX))
+                        {
+                            Swap(Data.selectedIdx[0], Data.selectedIdx[1], toX, toY);
+                            Switch();
+                            ResetSelect();
+                        }
+                    }
                 }
                 else
                 {
-                    if (Data.selectedIdx[1] + 1 == toY)
+                    if (CheckWhiteFTH(Data.selectedIdx[1], Data.selectedIdx[0]))
                     {
-                        Swap();
+                        if (Data.selectedIdx[1] - 2 == toY && (Data.selectedIdx[0] + 2 == toX || Data.selectedIdx[0] - 2 == toX))
+                        {
+                            Swap(Data.selectedIdx[0], Data.selectedIdx[1], toX, toY);
+                            Murder(Data.selectedIdx[0] + 2 == toX ? Data.selectedIdx[0] + 1 : Data.selectedIdx[0] - 1, Data.selectedIdx[1] - 1);
+                            UpdateDisplay(Data.GameForm.Controls);
+                            if (CheckWhiteFTH(toY, toX)) Data.selectedIdx = new int[2] { toX, toY };
+                            else
+                            {
+                                ResetSelect();
+                                Switch();
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        if (Data.selectedIdx[1] - 1 == toY && (Data.selectedIdx[0] + 1 == toX || Data.selectedIdx[0] - 1 == toX))
+                        {
+                            Swap(Data.selectedIdx[0], Data.selectedIdx[1], toX, toY);
+                            Switch();
+                            ResetSelect();
+                        }
                     }
                 }
-            }
-            else if (!Data.isBlack&&Data._Field[Data.selectedIdx[1], Data.selectedIdx[0]] == 2)
-            {
-
             }
         }
         public static void PesantToDama()
@@ -136,6 +180,7 @@ namespace Dama
                     DeterminePicture(Data._Field[y, x], pbox as PictureBox);
                 }
             }
+            Data.GameForm.Text = $"{(Data.isBlack?"fekete":"fehér")} - {(Data.selectedIdx[0]==-1?"választ":"lép")}";
         }
         private static void DeterminePicture(int inp, PictureBox pbx)
         {
@@ -160,16 +205,19 @@ namespace Dama
         }
         public static void Switch() => Data.isBlack = !Data.isBlack;
         private static int DeterminePiece(int x, int y, bool indent) =>
+            //ha 4,5. sor legyen üres
             (y == 3 || y == 4) ? 0 :
+            //ha x<4. sor legyen a behúzásnak megfelelően fekete bábú
             (y < 3) ?
                 indent ?
                     x % 2 == 0 ? 0 : 1 :
                     x % 2 == 0 ? 1 : 0 :
+            //ha x>5. sor legyen a behúzásnak megfelelően fekete bábú
             (y > 4) ?
                 indent ?
                     x % 2 == 0 ? 0 : 2 :
                     x % 2 == 0 ? 2 : 0
+            //Ez nem hívódik meg csak kellett az elsehez
             : 0;
-                    
     }
 }
