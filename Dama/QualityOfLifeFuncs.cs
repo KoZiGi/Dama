@@ -12,7 +12,7 @@ namespace Dama
     {
         public static PictureBox findPbox(string name, Control.ControlCollection formcontrols) {return formcontrols.Find(name, true)[0] as PictureBox;}
 
-        public static Control findControl(string name, Control.ControlCollection formcontrols) { return formcontrols.Find(name, true)[0] as Control;}
+        public static Control findControl(string name, Control.ControlCollection formcontrols) {return formcontrols.Find(name, true)[0] as Control;}
 
         public static int getCoordinatesValForMove(List<int> recentSelectedCoordinates, int x, int y) {return Data._Field[recentSelectedCoordinates[0] + (x), recentSelectedCoordinates[1] + (y)];}
 
@@ -98,5 +98,13 @@ namespace Dama
             if (getCoordinatesVal(NameToCoords(selectedpiece)) == getCoordinatesVal(recentCoords)) return false;
             return true;
         }
+
+        public static bool isAttack(bool isWhite, List<int> coordinates)
+        {
+            if (isWhite && getCoordinatesVal(coordinates) == 1) return true;
+            if (!isWhite && getCoordinatesVal(coordinates) == 2) return true;
+            return false;
+        }
+
     }
 }

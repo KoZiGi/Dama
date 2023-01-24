@@ -30,16 +30,38 @@ namespace Dama
 
         private static void Move(List<int> coordinatelist, Control.ControlCollection formcontrols, Control selectedpiece)
         {
-            if (!pieceSelected) selectedPieceDisplayAndMovement(coordinatelist, formcontrols);  //this makes the posible fields red where the piece could move to
+            if (!pieceSelected) selectedPieceDisplay(coordinatelist, formcontrols);  //this makes the posible fields red where the piece could move to
             else if (QualityOfLifeFuncs.repeatClickCheck(coordinatelist))   //this checks if the click on the piece was a repeat click on the same piece or not
             {
                 if (QualityOfLifeFuncs.getCoordinatesVal(recentSelectedCoordinates) == 1) fieldSetBackToWhite(formcontrols, +1);
                 else if (QualityOfLifeFuncs.getCoordinatesVal(recentSelectedCoordinates) == 2) fieldSetBackToWhite(formcontrols, -1);
             }
+            else if (QualityOfLifeFuncs.isAttack(isBlackOrWhiteTurn, coordinatelist))
+            {
+                MessageBox.Show("ÁÁÁÁÁÁ");
+            }
             else if (pieceSelected) //if everything is valid then this will make the move or the attack
             {
                 if (QualityOfLifeFuncs.getCoordinatesVal(recentSelectedCoordinates) == 2) afterMovementSetting(false, 2, selectedpiece, coordinatelist, formcontrols);
                 if (QualityOfLifeFuncs.getCoordinatesVal(recentSelectedCoordinates) == 1) afterMovementSetting(true, 1, selectedpiece, coordinatelist, formcontrols);
+            }
+        }
+
+        private static void Attack(int y, List<int> selectedCoords, bool isWhite, int value, Control.ControlCollection controls)
+        {
+            selectedCoords[1] += y;
+            selectedCoords[0] += +1;
+            if (isWhite && (QualityOfLifeFuncs.getCoordinatesVal(selectedCoords) == 1 || QualityOfLifeFuncs.getCoordinatesVal(selectedCoords) == 11))
+            {
+                selectedCoords[1] += y;
+                selectedCoords[0] += +1;
+                if (QualityOfLifeFuncs.getCoordinatesVal(selectedCoords) == 0)
+                {
+                    QualityOfLifeFuncs.giveCoordinatesVal(selectedCoords, value);
+                    QualityOfLifeFuncs.giveCoordinatesVal(recentSelectedCoordinates, 0);
+                    QualityOfLifeFuncs.setPboxImg(QualityOfLifeFuncs.findPbox(QualityOfLifeFuncs.convertCoordinatesToName(recentSelectedCoordinates[0], recentSelectedCoordinates[1]), controls), QualityOfLifeFuncs.OriginalPiece(0, Naturalpictures));
+                    QualityOfLifeFuncs.setPboxImg(QualityOfLifeFuncs.findPbox(QualityOfLifeFuncs.convertCoordinatesToName(selectedCoords[0], selectedCoords[1]), controls), QualityOfLifeFuncs.OriginalPiece(value, Naturalpictures));
+                }
             }
         }
 
@@ -65,35 +87,50 @@ namespace Dama
             } 
         }
 
-        
-
         private static void fieldSetBackToWhite( Control.ControlCollection formcontrols, int val)
         {
-            string name1 = QualityOfLifeFuncs.convertCoordinatesToName(recentSelectedCoordinates[0] - 1, recentSelectedCoordinates[1] + (val));
-            string name2 = QualityOfLifeFuncs.convertCoordinatesToName(recentSelectedCoordinates[0] + 1, recentSelectedCoordinates[1] + (val));
-            PictureBox goWhite = QualityOfLifeFuncs.findPbox(name1, formcontrols);
-            QualityOfLifeFuncs.setPboxImg(goWhite, QualityOfLifeFuncs.OriginalPiece(QualityOfLifeFuncs.getCoordinatesVal(QualityOfLifeFuncs.NameToCoords(QualityOfLifeFuncs.findControl(name1, formcontrols))), Naturalpictures));        //pass a variable into a function that returns a bitmap
-            goWhite = QualityOfLifeFuncs.findPbox(name2, formcontrols);
-            QualityOfLifeFuncs.setPboxImg(goWhite, QualityOfLifeFuncs.OriginalPiece(QualityOfLifeFuncs.getCoordinatesVal(QualityOfLifeFuncs.NameToCoords(QualityOfLifeFuncs.findControl(name2, formcontrols))), Naturalpictures)); ;
-            pieceSelected = false;
+            try
+            {
+                string name1 = QualityOfLifeFuncs.convertCoordinatesToName(recentSelectedCoordinates[0] - 1, recentSelectedCoordinates[1] + (val));
+                string name2 = QualityOfLifeFuncs.convertCoordinatesToName(recentSelectedCoordinates[0] + 1, recentSelectedCoordinates[1] + (val));
+                PictureBox goWhite = QualityOfLifeFuncs.findPbox(name1, formcontrols);
+                QualityOfLifeFuncs.setPboxImg(goWhite, QualityOfLifeFuncs.OriginalPiece(QualityOfLifeFuncs.getCoordinatesVal(QualityOfLifeFuncs.NameToCoords(QualityOfLifeFuncs.findControl(name1, formcontrols))), Naturalpictures));        //pass a variable into a function that returns a bitmap
+                goWhite = QualityOfLifeFuncs.findPbox(name2, formcontrols);
+                QualityOfLifeFuncs.setPboxImg(goWhite, QualityOfLifeFuncs.OriginalPiece(QualityOfLifeFuncs.getCoordinatesVal(QualityOfLifeFuncs.NameToCoords(QualityOfLifeFuncs.findControl(name2, formcontrols))), Naturalpictures)); ;
+                pieceSelected = false;
+            }
+            catch (IndexOutOfRangeException){}
         }
 
-        private static void selectedPieceDisplayAndMovement(List<int> coordinatelist, Control.ControlCollection formcontrols)
+        private static void selectedPieceDisplay(List<int> coordinatelist, Control.ControlCollection formcontrols)
         {
             pieceSelected = true;
             recentSelectedCoordinates = QualityOfLifeFuncs.copyCoordinates(coordinatelist);
-            if (QualityOfLifeFuncs.getCoordinatesValForMove(coordinatelist, 0, 0) == 2) validMovement(formcontrols, coordinatelist, -1); //white dama piece selected
-            if (QualityOfLifeFuncs.getCoordinatesValForMove(coordinatelist, 0, 0) == 1) validMovement(formcontrols, coordinatelist, +1);   //black dama piece selected
+            if (QualityOfLifeFuncs.getCoordinatesValForMove(coordinatelist, 0, 0) == 2) validMovement(formcontrols, coordinatelist, -1, isBlackOrWhiteTurn); //white dama piece selected
+            if (QualityOfLifeFuncs.getCoordinatesValForMove(coordinatelist, 0, 0) == 1) validMovement(formcontrols, coordinatelist, +1, isBlackOrWhiteTurn);   //black dama piece selected
         }
 
-        private static void validMovement(Control.ControlCollection formcontrols, List<int> coordinatelist, int val)
+        private static void validMovement(Control.ControlCollection formcontrols, List<int> coordinatelist, int val, bool isWhite)
         {
-            string validmovesName = QualityOfLifeFuncs.convertCoordinatesToName(coordinatelist[0] +1, coordinatelist[1] + (val));
-            try { selectionDisplay(formcontrols, QualityOfLifeFuncs.NameToCoords(QualityOfLifeFuncs.findControl(validmovesName, formcontrols)), QualityOfLifeFuncs.findPbox(validmovesName, formcontrols)); }
-            catch (IndexOutOfRangeException) { }
-            validmovesName = QualityOfLifeFuncs.convertCoordinatesToName(coordinatelist[0] - 1, coordinatelist[1] + (val));
-            try { selectionDisplay(formcontrols, QualityOfLifeFuncs.NameToCoords(QualityOfLifeFuncs.findControl(validmovesName, formcontrols)), QualityOfLifeFuncs.findPbox(validmovesName, formcontrols)); }
-            catch (IndexOutOfRangeException){}
+            string validmovesName = "";
+            if (isWhite) specificDisplay(coordinatelist, 2, val, validmovesName, formcontrols);
+            else specificDisplay(coordinatelist, 1, val, validmovesName, formcontrols);
+        }
+
+        private static void specificDisplay(List<int> coordinatelist, int v, int val,string validmovesName, Control.ControlCollection formcontrols)
+        {
+            if (QualityOfLifeFuncs.getCoordinatesValForMove(coordinatelist, 1, val) != v)
+            {
+                validmovesName = QualityOfLifeFuncs.convertCoordinatesToName(coordinatelist[0] + 1, coordinatelist[1] + (val));
+                try { selectionDisplay(formcontrols, QualityOfLifeFuncs.NameToCoords(QualityOfLifeFuncs.findControl(validmovesName, formcontrols)), QualityOfLifeFuncs.findPbox(validmovesName, formcontrols)); }
+                catch (IndexOutOfRangeException) { }
+            }
+            if (QualityOfLifeFuncs.getCoordinatesValForMove(coordinatelist, -1, val) != v)
+            {
+                validmovesName = QualityOfLifeFuncs.convertCoordinatesToName(coordinatelist[0] - 1, coordinatelist[1] + (val));
+                try { selectionDisplay(formcontrols, QualityOfLifeFuncs.NameToCoords(QualityOfLifeFuncs.findControl(validmovesName, formcontrols)), QualityOfLifeFuncs.findPbox(validmovesName, formcontrols)); }
+                catch (IndexOutOfRangeException) { }
+            }
         }
 
         private static void selectionDisplay(Control.ControlCollection formcontrols, List<int> coordinates, PictureBox move)    
