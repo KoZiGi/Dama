@@ -104,64 +104,111 @@ namespace Dama
             if (Data.selectedIdx[0] == -1 && Data.selectedIdx[1] == -1) return;
             if (Data._Field[Data.selectedIdx[1], Data.selectedIdx[0]] != 0)
             {
-                if (Data.isBlack)
+                if (Data._Field[Data.selectedIdx[1], Data.selectedIdx[0]] > 10)
                 {
-
-                    if (CheckBlackFTH(Data.selectedIdx[1], Data.selectedIdx[0]))
-                    {
-                        if (Data.selectedIdx[1] + 2 == toY && (Data.selectedIdx[0] + 2 == toX || Data.selectedIdx[0] - 2 == toX))
-                        {
-                            Swap(Data.selectedIdx[0], Data.selectedIdx[1], toX, toY);
-                            Murder(Data.selectedIdx[0]+2==toX ? Data.selectedIdx[0]+1 : Data.selectedIdx[0]-1 ,Data.selectedIdx[1]+1);
-                            UpdateDisplay(Data.GameForm.Controls);
-                            if (CheckBlackFTH(toY, toX)) Data.selectedIdx = new int[2] { toX, toY };
-                            else
-                            {
-                                ResetSelect();
-                                Switch();
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (Data.selectedIdx[1] + 1 == toY && (Data.selectedIdx[0] + 1 == toX || Data.selectedIdx[0] - 1 == toX))
-                        {
-                            Swap(Data.selectedIdx[0], Data.selectedIdx[1], toX, toY);
-                            Switch();
-                            ResetSelect();
-                        }
-                    }
+                    DamaMove(toX, toY);
                 }
                 else
                 {
-                    if (CheckWhiteFTH(Data.selectedIdx[1], Data.selectedIdx[0]))
+                    if (Data.isBlack)
                     {
-                        if (Data.selectedIdx[1] - 2 == toY && (Data.selectedIdx[0] + 2 == toX || Data.selectedIdx[0] - 2 == toX))
-                        {
-                            Swap(Data.selectedIdx[0], Data.selectedIdx[1], toX, toY);
-                            Murder(Data.selectedIdx[0] + 2 == toX ? Data.selectedIdx[0] + 1 : Data.selectedIdx[0] - 1, Data.selectedIdx[1] - 1);
-                            UpdateDisplay(Data.GameForm.Controls);
-                            if (CheckWhiteFTH(toY, toX)) Data.selectedIdx = new int[2] { toX, toY };
-                            else
-                            {
-                                ResetSelect();
-                                Switch();
-                            }
 
+                        if (CheckBlackFTH(Data.selectedIdx[1], Data.selectedIdx[0]))
+                        {
+                            if (Data.selectedIdx[1] + 2 == toY && (Data.selectedIdx[0] + 2 == toX || Data.selectedIdx[0] - 2 == toX))
+                            {
+                                Swap(Data.selectedIdx[0], Data.selectedIdx[1], toX, toY);
+                                Murder(Data.selectedIdx[0] + 2 == toX ? Data.selectedIdx[0] + 1 : Data.selectedIdx[0] - 1, Data.selectedIdx[1] + 1);
+                                UpdateDisplay(Data.GameForm.Controls);
+                                if (CheckBlackFTH(toY, toX)) Data.selectedIdx = new int[2] { toX, toY };
+                                else
+                                {
+                                    ResetSelect();
+                                    Switch();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (Data.selectedIdx[1] + 1 == toY && (Data.selectedIdx[0] + 1 == toX || Data.selectedIdx[0] - 1 == toX))
+                            {
+                                Swap(Data.selectedIdx[0], Data.selectedIdx[1], toX, toY);
+                                Switch();
+                                ResetSelect();
+                            }
                         }
                     }
                     else
                     {
-                        if (Data.selectedIdx[1] - 1 == toY && (Data.selectedIdx[0] + 1 == toX || Data.selectedIdx[0] - 1 == toX))
+                        if (CheckWhiteFTH(Data.selectedIdx[1], Data.selectedIdx[0]))
                         {
-                            Swap(Data.selectedIdx[0], Data.selectedIdx[1], toX, toY);
-                            Switch();
-                            ResetSelect();
+                            if (Data.selectedIdx[1] - 2 == toY && (Data.selectedIdx[0] + 2 == toX || Data.selectedIdx[0] - 2 == toX))
+                            {
+                                Swap(Data.selectedIdx[0], Data.selectedIdx[1], toX, toY);
+                                Murder(Data.selectedIdx[0] + 2 == toX ? Data.selectedIdx[0] + 1 : Data.selectedIdx[0] - 1, Data.selectedIdx[1] - 1);
+                                UpdateDisplay(Data.GameForm.Controls);
+                                if (CheckWhiteFTH(toY, toX)) Data.selectedIdx = new int[2] { toX, toY };
+                                else
+                                {
+                                    ResetSelect();
+                                    Switch();
+                                }
+
+                            }
+                        }
+                        else
+                        {
+                            if (Data.selectedIdx[1] - 1 == toY && (Data.selectedIdx[0] + 1 == toX || Data.selectedIdx[0] - 1 == toX))
+                            {
+                                Swap(Data.selectedIdx[0], Data.selectedIdx[1], toX, toY);
+                                Switch();
+                                ResetSelect();
+                            }
                         }
                     }
                 }
+                
             }
         }
+        private static void DamaMove(int toX, int toY)
+        {
+            if (ValidDir(toX, toY))
+            {
+                Swap(Data.selectedIdx[0], Data.selectedIdx[1], toX, toY);
+                ResetSelect();
+                Switch();
+            }
+        }
+        private static bool ValidDamaMove(int toX, int toY, int dirX, int dirY)
+        {
+            for (int i = Data.selectedIdx[1]+dirY; i != toY; i+=dirY)
+            {
+                for (int g = Data.selectedIdx[0]+dirX; g != toX; g+=dirX)
+                {
+                    if (Data._Field[i, g] == 0) continue;
+                    else if (Data._Field[i, g] == (Data.isBlack ? 2 : 1) || Data._Field[i, g] == (Data.isBlack ? 22 : 11))
+                    {
+                        Murder(g,i);
+                        return i + dirY == toY && g + dirX == toX;
+                    }
+                    else return false;
+                }
+            }
+            return true;
+        }
+        private static bool ValidDir(int toX, int toY)
+        {
+            if (Data.selectedIdx[0]<toX && Data.selectedIdx[1] > toY && Data.selectedIdx[0]+Data.selectedIdx[1]==toX+toY)
+                return ValidDamaMove(toX,toY, 1, -1);
+            if (Data.selectedIdx[0]>toX && Data.selectedIdx[1]>toY && Data.selectedIdx[0] - Data.selectedIdx[1] == toX - toY)
+                return ValidDamaMove(toX,toY,-1,-1);
+            if (Data.selectedIdx[0] < toX && Data.selectedIdx[1] < toY && Data.selectedIdx[0] - Data.selectedIdx[1] == toX - toY)
+                return ValidDamaMove(toX,toY,1,1);
+            if (Data.selectedIdx[0] > toX && Data.selectedIdx[1] < toY && Data.selectedIdx[0] + Data.selectedIdx[1] == toX + toY)
+                return ValidDamaMove(toX,toY,-1,1);
+            return false;
+        }
+        
         public static void PesantToDama()
         {
             for (int i = 0; i < 8; i++)
