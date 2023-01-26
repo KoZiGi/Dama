@@ -12,7 +12,7 @@ namespace Dama
 {
     class GameEvents
     {
-        public static bool isBlackOrWhiteTurn = true; //this variable shows wich players turn is present, true is white, false is black
+        public static bool isBlackOrWhiteTurn = false; //this variable shows wich players turn is present, true is white, false is black
         public static bool pieceSelected = false;
         public static List<int> recentSelectedCoordinates = new List<int>();
         public static int[] pieceValues = { 1, 2, 11, 0, 22 };
@@ -89,7 +89,7 @@ namespace Dama
             catch (IndexOutOfRangeException){}
         }
 
-        private static void selectionDisplay(Control.ControlCollection formcontrols, List<int> coordinates, PictureBox move)    
+        public static void selectionDisplay(Control.ControlCollection formcontrols, List<int> coordinates, PictureBox move)    
         {
             try
             {

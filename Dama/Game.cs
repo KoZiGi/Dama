@@ -14,9 +14,8 @@ namespace Dama
             if (Data.selectedIdx[0] == -1 && Data.selectedIdx[1] == -1)
             {
                 SelectPiece(pbox.Name);
+                //GameEvents.selectionDisplay(Data.GameForm.Controls, GetCoords(pbox.Name).ToList(), pbox);
                 UpdateDisplay(Data.GameForm.Controls);
-                bool[] canhit = CheckIfCanHit();
-                if (canhit[0]) MessageBox.Show($"Tud ütni {(canhit[1] ? "Fekete" : "Fehér")}");
             }
             else
             {
@@ -29,17 +28,17 @@ namespace Dama
         private static void ResetSelect() => Data.selectedIdx = new int[2] { -1, -1 };
         private static int[] GetCoords(string controlName) => new int[2] { Convert.ToInt32(controlName[1].ToString()), Convert.ToInt32(controlName[2].ToString()) };
         private static void SelectPiece(string pbxName) => Data.selectedIdx = GetCoords(pbxName);
-        private static bool[] CheckIfCanHit()
+        private static bool CheckIfCanHit()
         {
             for (int i = 0; i < 8; i++)
             {
                 for (int g = 0; g < 8; g++)
                 {
-                    if (Data.isBlack && Data._Field[i, g] == 1) if (CheckBlackFTH(i, g)) return new bool[] { true, true};
-                    else if (!Data.isBlack && Data._Field[i, g]==2) if (CheckWhiteFTH(i, g)) return new bool[] { true, false }; 
+                    if (Data.isBlack && Data._Field[i, g] == 1) if (CheckBlackFTH(i, g)) return true;
+                        else if (Data._Field[i, g] == 2) if (CheckWhiteFTH(i, g)) return true;
                 }
             }
-            return new bool[] { false, false };
+            return false;
         }
         public static void GenGame()
         {
@@ -254,7 +253,29 @@ namespace Dama
                     break;
             }
         }
-        public static void Switch() => Data.isBlack = !Data.isBlack;
+        public static void Switch() 
+        {
+            Data.isBlack = !Data.isBlack;
+            GetHits();
+        }
+        private static void GetHits()
+        {
+            if (CheckIfCanHit())
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int g = 0; g < 8; g++)
+                    {
+                        if (Data.isBlack)
+                        {
+                            if (CheckBlackFTH(i, g)) Data.HitReqCoords.Add(new int[] { i, g });
+
+                        }
+                        
+                    }
+                }
+            }
+        }
         private static int DeterminePiece(int x, int y, bool indent) =>
             //ha 4,5. sor legyen üres
             (y == 3 || y == 4) ? 0 :
