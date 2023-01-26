@@ -14,7 +14,12 @@ namespace Dama
 
         public static Control findControl(string name, Control.ControlCollection formcontrols) {return formcontrols.Find(name, true)[0] as Control;}
 
-        public static int getCoordinatesValForMove(List<int> recentSelectedCoordinates, int x, int y) {return Data._Field[recentSelectedCoordinates[0] + (x), recentSelectedCoordinates[1] + (y)];}
+        public static int getCoordinatesValForMove(List<int> recentSelectedCoordinates, int x, int y) 
+        {
+            try {return Data._Field[recentSelectedCoordinates[0] + (x), recentSelectedCoordinates[1] + (y)];}
+            catch (IndexOutOfRangeException) {}
+            return 0;
+        }
 
         public static int getCoordinatesVal(List<int> SelectedCoordinates) {return Data._Field[SelectedCoordinates[0], SelectedCoordinates[1]];}
 
