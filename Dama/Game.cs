@@ -25,6 +25,14 @@ namespace Dama
                 UpdateDisplay(Data.GameForm.Controls);
             }
         }
+        private static bool CheckIfHittingPiece()
+        {
+            for (int i = 0; i < Data.HitReqCoords.Count; i++)
+            {
+                if (Data.selectedIdx[1] == Data.HitReqCoords[i][0] && Data.selectedIdx[0] == Data.HitReqCoords[i][1]) return true;
+            }
+            return false;
+        }
         private static void ResetSelect() => Data.selectedIdx = new int[2] { -1, -1 };
         private static int[] GetCoords(string controlName) => new int[2] { Convert.ToInt32(controlName[1].ToString()), Convert.ToInt32(controlName[2].ToString()) };
         private static void SelectPiece(string pbxName) => Data.selectedIdx = GetCoords(pbxName);
@@ -34,8 +42,11 @@ namespace Dama
             {
                 for (int g = 0; g < 8; g++)
                 {
-                    if (Data.isBlack && Data._Field[i, g] == 1) if (CheckBlackFTH(i, g)) return true;
-                        else if (Data._Field[i, g] == 2) if (CheckWhiteFTH(i, g)) return true;
+                    if (Data.isBlack && Data._Field[i, g] == 1)
+                    {
+                        if (CheckBlackFTH(i, g)) return true;
+                    }
+                    else if (Data._Field[i, g] == 2) if (CheckWhiteFTH(i, g)) return true;
                 }
             }
             return false;
@@ -114,16 +125,24 @@ namespace Dama
 
                         if (CheckBlackFTH(Data.selectedIdx[1], Data.selectedIdx[0]))
                         {
-                            if (Data.selectedIdx[1] + 2 == toY && (Data.selectedIdx[0] + 2 == toX || Data.selectedIdx[0] - 2 == toX))
+                            if (CheckIfHittingPiece())
                             {
-                                Swap(Data.selectedIdx[0], Data.selectedIdx[1], toX, toY);
-                                Murder(Data.selectedIdx[0] + 2 == toX ? Data.selectedIdx[0] + 1 : Data.selectedIdx[0] - 1, Data.selectedIdx[1] + 1);
-                                UpdateDisplay(Data.GameForm.Controls);
-                                if (CheckBlackFTH(toY, toX)) Data.selectedIdx = new int[2] { toX, toY };
-                                else
+                                if (Data.selectedIdx[1] + 2 == toY && (Data.selectedIdx[0] + 2 == toX || Data.selectedIdx[0] - 2 == toX))
                                 {
-                                    ResetSelect();
-                                    Switch();
+                                    Swap(Data.selectedIdx[0], Data.selectedIdx[1], toX, toY);
+                                    Murder(Data.selectedIdx[0] + 2 == toX ? Data.selectedIdx[0] + 1 : Data.selectedIdx[0] - 1, Data.selectedIdx[1] + 1);
+                                    UpdateDisplay(Data.GameForm.Controls);
+                                    if (CheckBlackFTH(toY, toX))
+                                    {
+                                        Data.selectedIdx = new int[2] { toX, toY };
+                                        Data.HitReqCoords.Clear();
+                                        GetHits();
+                                    }
+                                    else
+                                    {
+                                        ResetSelect();
+                                        Switch();
+                                    }
                                 }
                             }
                         }
@@ -131,9 +150,12 @@ namespace Dama
                         {
                             if (Data.selectedIdx[1] + 1 == toY && (Data.selectedIdx[0] + 1 == toX || Data.selectedIdx[0] - 1 == toX))
                             {
-                                Swap(Data.selectedIdx[0], Data.selectedIdx[1], toX, toY);
-                                Switch();
-                                ResetSelect();
+                                if (Data.HitReqCoords.Count == 0)
+                                {
+                                    Swap(Data.selectedIdx[0], Data.selectedIdx[1], toX, toY);
+                                    Switch();
+                                    ResetSelect();
+                                }
                             }
                         }
                     }
@@ -141,33 +163,46 @@ namespace Dama
                     {
                         if (CheckWhiteFTH(Data.selectedIdx[1], Data.selectedIdx[0]))
                         {
-                            if (Data.selectedIdx[1] - 2 == toY && (Data.selectedIdx[0] + 2 == toX || Data.selectedIdx[0] - 2 == toX))
+                            GetHits();
+                            if (CheckIfHittingPiece())
                             {
-                                Swap(Data.selectedIdx[0], Data.selectedIdx[1], toX, toY);
-                                Murder(Data.selectedIdx[0] + 2 == toX ? Data.selectedIdx[0] + 1 : Data.selectedIdx[0] - 1, Data.selectedIdx[1] - 1);
-                                UpdateDisplay(Data.GameForm.Controls);
-                                if (CheckWhiteFTH(toY, toX)) Data.selectedIdx = new int[2] { toX, toY };
-                                else
+                                if (Data.selectedIdx[1] - 2 == toY && (Data.selectedIdx[0] + 2 == toX || Data.selectedIdx[0] - 2 == toX) && CheckIfHittingPiece())
                                 {
-                                    ResetSelect();
-                                    Switch();
+                                    Swap(Data.selectedIdx[0], Data.selectedIdx[1], toX, toY);
+                                    Murder(Data.selectedIdx[0] + 2 == toX ? Data.selectedIdx[0] + 1 : Data.selectedIdx[0] - 1, Data.selectedIdx[1] - 1);
+                                    UpdateDisplay(Data.GameForm.Controls);
+                                    if (CheckWhiteFTH(toY, toX))
+                                    {
+                                        Data.selectedIdx = new int[2] { toX, toY };
+                                        Data.HitReqCoords.Clear();
+                                        GetHits();
+                                    }
+                                    else
+                                    {
+                                        ResetSelect();
+                                        Switch();
+                                    }
                                 }
-
                             }
                         }
                         else
                         {
                             if (Data.selectedIdx[1] - 1 == toY && (Data.selectedIdx[0] + 1 == toX || Data.selectedIdx[0] - 1 == toX))
                             {
-                                Swap(Data.selectedIdx[0], Data.selectedIdx[1], toX, toY);
-                                Switch();
-                                ResetSelect();
+                                if (Data.HitReqCoords.Count == 0)
+                                {
+                                    Swap(Data.selectedIdx[0], Data.selectedIdx[1], toX, toY);
+                                    Switch();
+                                    ResetSelect();
+                                }
                             }
                         }
                     }
                     else
                     {
                         ResetSelect();
+                        Data.HitReqCoords.Clear();
+                        GetHits();
                     }
                 }
                 
@@ -177,9 +212,12 @@ namespace Dama
         {
             if (ValidDir(toX, toY))
             {
-                Swap(Data.selectedIdx[0], Data.selectedIdx[1], toX, toY);
-                ResetSelect();
-                Switch();
+                if (Data.HitReqCoords.Count == 0)
+                {
+                    Swap(Data.selectedIdx[0], Data.selectedIdx[1], toX, toY);
+                    ResetSelect();
+                    Switch();
+                }
             }
         }
         private static bool ValidDamaMove(int toX, int toY, int dirX, int dirY)
@@ -255,23 +293,27 @@ namespace Dama
         }
         public static void Switch() 
         {
+            Data.HitReqCoords.Clear();
             Data.isBlack = !Data.isBlack;
             GetHits();
         }
         private static void GetHits()
         {
-            if (CheckIfCanHit())
+            for (int i = 0; i < 8; i++)
             {
-                for (int i = 0; i < 8; i++)
+                for (int g = 0; g < 8; g++)
                 {
-                    for (int g = 0; g < 8; g++)
+                    if (Data._Field[i, g] != 0)
                     {
+
                         if (Data.isBlack)
                         {
                             if (CheckBlackFTH(i, g)) Data.HitReqCoords.Add(new int[] { i, g });
-
                         }
-                        
+                        else
+                        {
+                            if (CheckWhiteFTH(i, g)) Data.HitReqCoords.Add(new int[] { i, g });
+                        }
                     }
                 }
             }
