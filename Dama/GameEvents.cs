@@ -36,10 +36,6 @@ namespace Dama
                 if (QualityOfLifeFuncs.getCoordinatesVal(recentSelectedCoordinates) == 1) fieldSetBackToWhite(formcontrols, +1);
                 else if (QualityOfLifeFuncs.getCoordinatesVal(recentSelectedCoordinates) == 2) fieldSetBackToWhite(formcontrols, -1);
             }
-            else if (QualityOfLifeFuncs.isAttack(isBlackOrWhiteTurn, coordinatelist))
-            {
-                MessageBox.Show("ÁÁÁÁÁÁ");
-            }
             else if (pieceSelected) //if everything is valid then this will make the move or the attack
             {
                 if (QualityOfLifeFuncs.getCoordinatesVal(recentSelectedCoordinates) == 2) afterMovementSetting(false, 2, selectedpiece, coordinatelist, formcontrols);

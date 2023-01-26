@@ -99,12 +99,5 @@ namespace Dama
             return true;
         }
 
-        public static bool isAttack(bool isWhite, List<int> coordinates)
-        {
-            if (isWhite && getCoordinatesVal(coordinates) == 1) return true;
-            if (!isWhite && getCoordinatesVal(coordinates) == 2) return true;
-            return false;
-        }
-
     }
 }
