@@ -110,7 +110,7 @@ namespace Dama
                 }
                 else
                 {
-                    if (Data.isBlack)
+                    if (Data.isBlack && Data._Field[Data.selectedIdx[1], Data.selectedIdx[0]]==1)
                     {
 
                         if (CheckBlackFTH(Data.selectedIdx[1], Data.selectedIdx[0]))
@@ -138,7 +138,7 @@ namespace Dama
                             }
                         }
                     }
-                    else
+                    else if (Data._Field[Data.selectedIdx[1],Data.selectedIdx[0]]==2 && !Data.isBlack)
                     {
                         if (CheckWhiteFTH(Data.selectedIdx[1], Data.selectedIdx[0]))
                         {
@@ -165,6 +165,10 @@ namespace Dama
                                 ResetSelect();
                             }
                         }
+                    }
+                    else
+                    {
+                        ResetSelect();
                     }
                 }
                 
