@@ -51,6 +51,7 @@ namespace Dama
                     {
                         Game.GameLogic(pbx);  
                     };
+                    pbx.Click += delegate (object sender, EventArgs e) { GameEvents.PlayerTurnValidation(pbx, this.Controls); };
                     Controls.Add(pbx);
 
                    
