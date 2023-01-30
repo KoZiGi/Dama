@@ -36,18 +36,22 @@ namespace Dama
         private static void ResetSelect() => Data.selectedIdx = new int[2] { -1, -1 };
         private static int[] GetCoords(string controlName) => new int[2] { Convert.ToInt32(controlName[1].ToString()), Convert.ToInt32(controlName[2].ToString()) };
         private static void SelectPiece(string pbxName) => Data.selectedIdx = GetCoords(pbxName);
-        private static bool CheckIfCanHit()
+        private static bool CheckIfCanMove(int x, int y)
         {
-            for (int i = 0; i < 8; i++)
+            if ((Data.isBlack ? y+2<8 : y-2>-1))
             {
-                for (int g = 0; g < 8; g++)
+                if (x + 1 < 8)
                 {
-                    if (Data.isBlack && Data._Field[i, g] == 1)
-                    {
-                        if (CheckBlackFTH(i, g)) return true;
-                    }
-                    else if (Data._Field[i, g] == 2) if (CheckWhiteFTH(i, g)) return true;
+                    if (Data._Field[y + (Data.isBlack ? 1 : -1), x + 1] == 0) return true;
                 }
+                if (x - 1 > -1)
+                {
+                    if (Data._Field[y + (Data.isBlack ? 1 : -1), x - 1] == 0) return true;
+                }
+            }
+            if (Data.isBlack ? CheckBlackFTH(y, x) : CheckWhiteFTH(y, x))
+            {
+                return true;
             }
             return false;
         }
@@ -68,16 +72,16 @@ namespace Dama
             if (i + 2 > 7) return false;
             if (g + 2 < 8)
             {
-                if (Data._Field[i+2, g + 2] == 0)
+                if (Data._Field[i+2, g + 2] == 0 && (Data._Field[i + 1, g + 1] == 2 || Data._Field[i + 1, g + 1] == 22))
                 {
-                    return Data._Field[i + 1, g + 1] == 2 || Data._Field[i + 1, g + 1] == 22;
+                    return true;
                 }
             }
             if (g - 2 > -1)
             {
-                if (Data._Field[i + 2, g - 2] == 0)
+                if (Data._Field[i + 2, g - 2] == 0 && (Data._Field[i + 1, g - 1] == 2 || Data._Field[i + 1, g - 1] == 22))
                 {
-                    return Data._Field[i + 1, g - 1] == 2 || Data._Field[i + 1, g - 1] == 22;
+                    return true;
                 }
             }
             return false;
@@ -87,16 +91,16 @@ namespace Dama
             if (i - 2 < 0) return false;
             if (g + 2 < 8) 
             {
-                if (Data._Field[i - 2, g + 2] == 0)
+                if (Data._Field[i - 2, g + 2] == 0 && (Data._Field[i - 1, g + 1] == 1 || Data._Field[i - 1, g + 1] == 11))
                 {
-                    return Data._Field[i - 1, g + 1] == 1 || Data._Field[i - 1, g + 1] == 11;
+                    return true;
                 }
             }
             if (g - 2 > -1)
             {
-                if (Data._Field[i - 2, g - 2] == 0)
+                if (Data._Field[i - 2, g - 2] == 0 && (Data._Field[i - 1, g - 1] == 1 || Data._Field[i - 1, g - 1] == 11))
                 {
-                    return Data._Field[i - 1, g - 1] == 1 || Data._Field[i - 1, g - 1] == 11;
+                    return true;
                 }
             }
             return false;
@@ -122,7 +126,7 @@ namespace Dama
                 {
                     if (Data.isBlack && Data._Field[Data.selectedIdx[1], Data.selectedIdx[0]]==1)
                     {
-
+                        GetHits();
                         if (CheckBlackFTH(Data.selectedIdx[1], Data.selectedIdx[0]))
                         {
                             if (CheckIfHittingPiece())
@@ -135,7 +139,6 @@ namespace Dama
                                     if (CheckBlackFTH(toY, toX))
                                     {
                                         Data.selectedIdx = new int[2] { toX, toY };
-                                        Data.HitReqCoords.Clear();
                                         GetHits();
                                     }
                                     else
@@ -174,7 +177,6 @@ namespace Dama
                                     if (CheckWhiteFTH(toY, toX))
                                     {
                                         Data.selectedIdx = new int[2] { toX, toY };
-                                        Data.HitReqCoords.Clear();
                                         GetHits();
                                     }
                                     else
@@ -201,7 +203,6 @@ namespace Dama
                     else
                     {
                         ResetSelect();
-                        Data.HitReqCoords.Clear();
                         GetHits();
                     }
                 }
@@ -222,18 +223,21 @@ namespace Dama
         }
         private static bool ValidDamaMove(int toX, int toY, int dirX, int dirY)
         {
-            for (int i = Data.selectedIdx[1]+dirY; i != toY; i+=dirY)
+            int x = Data.selectedIdx[0] + dirX, y = Data.selectedIdx[1] + dirY;
+
+            for (int i = 0; i < Math.Abs(Data.selectedIdx[1]-toY); i++)
             {
-                for (int g = Data.selectedIdx[0]+dirX; g != toX; g+=dirX)
+                if (Data._Field[y, x] == 0)
                 {
-                    if (Data._Field[i, g] == 0) continue;
-                    else if (Data._Field[i, g] == (Data.isBlack ? 2 : 1) || Data._Field[i, g] == (Data.isBlack ? 22 : 11))
-                    {
-                        Murder(g,i);
-                        return i + dirY == toY && g + dirX == toX;
-                    }
-                    else return false;
+                    x += dirX;
+                    y += dirY;
                 }
+                else if (Data._Field[y, x] == (Data.isBlack ? 2 : 1) || Data._Field[y, x] == (Data.isBlack ? 22 : 11))
+                {
+                    Murder(x, y);
+                    return x + dirX == toX && y + dirY == toY;
+                }
+                else return false;
             }
             return true;
         }
@@ -293,12 +297,18 @@ namespace Dama
         }
         public static void Switch() 
         {
+            if (HasLost())
+            {
+                MessageBox.Show($"Győzött {(Data.isBlack ? "Fehér" : "Fekete")}");
+                Application.Exit();
+            }
             Data.HitReqCoords.Clear();
             Data.isBlack = !Data.isBlack;
             GetHits();
         }
         private static void GetHits()
         {
+            Data.HitReqCoords.Clear();
             for (int i = 0; i < 8; i++)
             {
                 for (int g = 0; g < 8; g++)
@@ -306,11 +316,11 @@ namespace Dama
                     if (Data._Field[i, g] != 0)
                     {
 
-                        if (Data.isBlack)
+                        if (Data.isBlack && Data._Field[i,g]==1)
                         {
                             if (CheckBlackFTH(i, g)) Data.HitReqCoords.Add(new int[] { i, g });
                         }
-                        else
+                        else if(!Data.isBlack && Data._Field[i,g]==2)
                         {
                             if (CheckWhiteFTH(i, g)) Data.HitReqCoords.Add(new int[] { i, g });
                         }
@@ -333,5 +343,39 @@ namespace Dama
                     x % 2 == 0 ? 2 : 0
             //Ez nem hívódik meg csak kellett az elsehez
             : 0;
+        //WINCHECK™™™™™™™
+        private static bool HasLost()
+        {
+            int totalPieces = 0;
+            for (int i = 0; i < 8; i++)
+            {
+                for (int g = 0; g < 8; g++)
+                    if (Data._Field[i, g] == (Data.isBlack ? 2 : 1)) totalPieces++;
+            }
+            if (PermaStuck())
+            {
+                return true;
+            }
+            return totalPieces==0;
+        }
+        private static bool PermaStuck()
+        {
+            int movables = 0;
+            for (int i = 0; i < 8; i++)
+            {
+                for (int g= 0; g < 8; g++)
+                {
+                    if (Data.isBlack && (Data._Field[i,g]==1 || Data._Field[i,g] == 11))
+                    {
+                        if (CheckIfCanMove(g, i)) movables++;
+                    }
+                    else if (!Data.isBlack && (Data._Field[i, g] == 2 || Data._Field[i, g] == 22))
+                    {
+                        if (CheckIfCanMove(g, i)) movables++;
+                    }
+                }
+            }
+            return movables==0;
+        }
     }
 }

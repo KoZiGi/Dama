@@ -10,7 +10,17 @@ namespace Dama
     {
         public static bool isBlack = true;
         public static Form1 GameForm;
-        public static int[,] _Field = new int[8, 8];
+        //public static int[,] _Field = new int[8, 8];
+        public static int[,] _Field = new int[8, 8]{
+            {1,0,1,0,1,0,0,0},    
+            {0,0,0,0,0,0,1,0},    
+            {0,0,0,0,2,0,0,0},    
+            {0,0,0,0,0,0,0,0},    
+            {0,0,0,0,0,0,0,0},    
+            {0,0,0,0,0,0,0,0},    
+            {0,0,0,0,0,0,0,0},    
+            {0,0,0,0,0,0,0,0}
+        };
         public static int[] selectedIdx = new int[2] { -1 , -1 };
         public static List<int[]> HitReqCoords = new List<int[]>();
     }
