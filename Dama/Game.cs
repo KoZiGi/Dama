@@ -20,8 +20,8 @@ namespace Dama
             else
             {
                 Move(GetCoords(pbox.Name)[0], GetCoords(pbox.Name)[1]);
-                ResetSelect();
                 PesantToDama();
+                ResetSelect();
                 UpdateDisplay(Data.GameForm.Controls);
             }
         }
@@ -38,22 +38,53 @@ namespace Dama
         private static void SelectPiece(string pbxName) => Data.selectedIdx = GetCoords(pbxName);
         private static bool CheckIfCanMove(int x, int y)
         {
-            if ((Data.isBlack ? y+2<8 : y-2>-1))
-            {
                 if (x + 1 < 8)
                 {
-                    if (Data._Field[y + (Data.isBlack ? 1 : -1), x + 1] == 0) return true;
+                    if (Data._Field[y, x]%11 == 0 && Data._Field[y, x] != 0)
+                    {
+                        if (CheckDamaMove(x, y))
+                        {
+                            return true;
+                        }
+                    }
+                    else if (Data._Field[y + (Data.isBlack ? 1 : -1), x + 1] == 0) return true;
                 }
                 if (x - 1 > -1)
                 {
                     if (Data._Field[y + (Data.isBlack ? 1 : -1), x - 1] == 0) return true;
                 }
-            }
             if (Data.isBlack ? CheckBlackFTH(y, x) : CheckWhiteFTH(y, x))
             {
                 return true;
             }
             return false;
+        }
+        private static bool CheckDamaMove(int x, int y)
+        {
+            if (y+1<8)
+            {
+                if (x+1<8 && Data._Field[y+1, x + 1] == 0)
+                    return true;
+                if (x - 1 > -1 && Data._Field[y + 1, x - 1] == 0)
+                    return true;
+                if (Data._Field[y + 1, x + 1] == (Data.isBlack ? 2 : 1) && y + 2 < 8 && x + 2 < 8 && Data._Field[y + 2, x + 2] == 0)
+                    return true;
+                if (Data._Field[y + 1, x - 1] == (Data.isBlack ? 2 : 1) && y + 2 < 8 && x - 2 > -1 && Data._Field[y + 2, x - 2] == 0)
+                    return true;
+            }
+            if (y - 1 > -1)
+            {
+                if (x + 1 < 8 && Data._Field[y - 1, x + 1] == 0)
+                    return true;
+                if (x - 1 > -1 && Data._Field[y - 1, x - 1] == 0)
+                    return true;
+                if (Data._Field[y - 1, x + 1] == (Data.isBlack ? 2 : 1) && y - 2 < 8 && x + 2 < 8 && Data._Field[y - 2, x + 2] == 0)
+                    return true;
+                if (Data._Field[y - 1, x - 1] == (Data.isBlack ? 2 : 1) && y - 2 < 8 && x - 2 > -1 && Data._Field[y - 2, x - 2] == 0)
+                    return true;
+            }
+            return false;
+
         }
         public static void GenGame()
         {
@@ -211,7 +242,7 @@ namespace Dama
         }
         private static void DamaMove(int toX, int toY)
         {
-            if (ValidDir(toX, toY))
+            if (ValidDir(toX, toY) && Data.isBlack ? Data._Field[Data.selectedIdx[1], Data.selectedIdx[0]]==11 : Data._Field[Data.selectedIdx[1], Data.selectedIdx[0]] == 22)
             {
                 if (Data.HitReqCoords.Count == 0)
                 {
@@ -221,7 +252,7 @@ namespace Dama
                 }
             }
         }
-        private static bool ValidDamaMove(int toX, int toY, int dirX, int dirY)
+        private static bool ValidDamaMove(int toX, int toY, int dirX, int dirY, bool mierda)
         {
             int x = Data.selectedIdx[0] + dirX, y = Data.selectedIdx[1] + dirY;
 
@@ -234,7 +265,8 @@ namespace Dama
                 }
                 else if (Data._Field[y, x] == (Data.isBlack ? 2 : 1) || Data._Field[y, x] == (Data.isBlack ? 22 : 11))
                 {
-                    Murder(x, y);
+                    if (mierda)
+                        Murder(x, y);
                     return x + dirX == toX && y + dirY == toY;
                 }
                 else return false;
@@ -244,13 +276,13 @@ namespace Dama
         private static bool ValidDir(int toX, int toY)
         {
             if (Data.selectedIdx[0]<toX && Data.selectedIdx[1] > toY && Data.selectedIdx[0]+Data.selectedIdx[1]==toX+toY)
-                return ValidDamaMove(toX,toY, 1, -1);
+                return ValidDamaMove(toX,toY, 1, -1, true);
             if (Data.selectedIdx[0]>toX && Data.selectedIdx[1]>toY && Data.selectedIdx[0] - Data.selectedIdx[1] == toX - toY)
-                return ValidDamaMove(toX,toY,-1,-1);
+                return ValidDamaMove(toX,toY,-1,-1, true);
             if (Data.selectedIdx[0] < toX && Data.selectedIdx[1] < toY && Data.selectedIdx[0] - Data.selectedIdx[1] == toX - toY)
-                return ValidDamaMove(toX,toY,1,1);
+                return ValidDamaMove(toX,toY,1,1, true);
             if (Data.selectedIdx[0] > toX && Data.selectedIdx[1] < toY && Data.selectedIdx[0] + Data.selectedIdx[1] == toX + toY)
-                return ValidDamaMove(toX,toY,-1,1);
+                return ValidDamaMove(toX,toY,-1,1, true);
             return false;
         }
         
@@ -261,6 +293,7 @@ namespace Dama
                 if (Data._Field[0, i] == 2) Data._Field[0, i] = 22;
                 if (Data._Field[7, i] == 1) Data._Field[7, i] = 11;
             }
+            UpdateDisplay(Data.GameForm.Controls);
         }
         public static void UpdateDisplay(Control.ControlCollection pboxes)
         {
@@ -272,7 +305,7 @@ namespace Dama
                     DeterminePicture(Data._Field[y, x], pbox as PictureBox);
                 }
             }
-            Data.GameForm.Text = $"{(Data.isBlack?"fekete":"fehér")} - {(Data.selectedIdx[0]==-1?"választ":"lép")}";
+            Data.GameForm.Text = $"{(Data.isBlack?"Fekete":"Fehér")} - {(Data.selectedIdx[0]==-1?"választ":"lép")}";
         }
         private static void DeterminePicture(int inp, PictureBox pbx)
         {
@@ -299,7 +332,7 @@ namespace Dama
         {
             if (HasLost())
             {
-                MessageBox.Show($"Győzött {(Data.isBlack ? "Fehér" : "Fekete")}");
+                MessageBox.Show($"Győzött {(Data.isBlack ? "Fekete" : "Fehér")}");
                 Application.Exit();
             }
             Data.HitReqCoords.Clear();
@@ -350,7 +383,7 @@ namespace Dama
             for (int i = 0; i < 8; i++)
             {
                 for (int g = 0; g < 8; g++)
-                    if (Data._Field[i, g] == (Data.isBlack ? 2 : 1)) totalPieces++;
+                    if (Data._Field[i, g] == (Data.isBlack ? 2 : 1) || Data._Field[i, g] == (Data.isBlack ? 22 : 11)) totalPieces++;
             }
             if (PermaStuck())
             {
@@ -360,10 +393,11 @@ namespace Dama
         }
         private static bool PermaStuck()
         {
+            PesantToDama();
             int movables = 0;
             for (int i = 0; i < 8; i++)
             {
-                for (int g= 0; g < 8; g++)
+                for (int g = 0; g < 8; g++)
                 {
                     if (Data.isBlack && (Data._Field[i,g]==1 || Data._Field[i,g] == 11))
                     {
