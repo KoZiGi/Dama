@@ -38,21 +38,28 @@ namespace Dama
         private static void SelectPiece(string pbxName) => Data.selectedIdx = GetCoords(pbxName);
         private static bool CheckIfCanMove(int x, int y)
         {
-                if (x + 1 < 8)
+            if (x + 1 < 8)
+            {
+                if (Data._Field[y, x] % 11 == 0 && Data._Field[y, x] != 0)
                 {
-                    if (Data._Field[y, x]%11 == 0 && Data._Field[y, x] != 0)
+                    if (CheckDamaMove(x, y))
                     {
-                        if (CheckDamaMove(x, y))
-                        {
-                            return true;
-                        }
+                        return true;
                     }
-                    else if (Data._Field[y + (Data.isBlack ? 1 : -1), x + 1] == 0) return true;
                 }
-                if (x - 1 > -1)
+                else if (Data._Field[y + (Data.isBlack ? 1 : -1), x + 1] == 0) return true;
+            }
+            if (x - 1 > -1)
+            {
+                if (Data._Field[y, x] % 11 == 0 && Data._Field[y, x] != 0)
                 {
-                    if (Data._Field[y + (Data.isBlack ? 1 : -1), x - 1] == 0) return true;
+                    if (CheckDamaMove(x, y))
+                    {
+                        return true;
+                    }
                 }
+                if (Data._Field[y + (Data.isBlack ? 1 : -1), x - 1] == 0) return true;
+            }
             if (Data.isBlack ? CheckBlackFTH(y, x) : CheckWhiteFTH(y, x))
             {
                 return true;
@@ -143,7 +150,7 @@ namespace Dama
             Data._Field[toY, toX] = temp;
         }
         private static void Murder(int X, int Y) => Data._Field[Y, X] = 0;
-        //ALERTA: hibakezelés kellene. | kötelezettség is kellene
+        //ALERTA: Működik!!!!444!!44!!
         public static void Move(int toX, int toY)
         {
             if (Data.selectedIdx[0] == -1 && Data.selectedIdx[1] == -1) return;
@@ -265,7 +272,7 @@ namespace Dama
                 }
                 else if (Data._Field[y, x] == (Data.isBlack ? 2 : 1) || Data._Field[y, x] == (Data.isBlack ? 22 : 11))
                 {
-                    if (mierda)
+                    if (mierda && Data.HitReqCoords.Count==0)
                         Murder(x, y);
                     return x + dirX == toX && y + dirY == toY;
                 }
@@ -332,7 +339,7 @@ namespace Dama
         {
             if (HasLost())
             {
-                MessageBox.Show($"Győzött {(Data.isBlack ? "Fekete" : "Fehér")}");
+                MessageBox.Show($"Győzött {(Data.isBlack ? "Fekete" : "Fehér")}", "Gratulálunk");
                 Application.Exit();
             }
             Data.HitReqCoords.Clear();
